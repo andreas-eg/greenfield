@@ -1,0 +1,34 @@
+{
+ "_comment": "Every file greenfield's world is drawn with, by the hash Studio keeps it under (as S\u00f6der's assets.lock). The files are published in the SODER project for now (SODER-WORLD-S72).",
+ "project": "SODER",
+ "assets": {
+  "kit/greenfield/field.glb": {
+   "sha256": "9012857262b517b54f62eccec1dfb6d39293652b2b768f46cdf58352d18b0cf4",
+   "size": 1892
+  },
+  "kit/urban/sth_door.glb": {
+   "sha256": "3210a52899d343c4c7e226de9ac7f945937fe1fcc2afd13c3a641e400b8beb79",
+   "size": 8200
+  },
+  "kit/urban/sth_walking_castle.glb": {
+   "sha256": "43145c8c1d1d366bced79204b04b54ce4b6f8b6008723ffff31134601124824b",
+   "size": 29984
+  },
+  "kit/walking_castle/castle_yard.glb": {
+   "sha256": "dae0821cfd975a462fae8b6ff426a4ac6fa80e87a980223007be6675c81395ef",
+   "size": 11096
+  },
+  "realm/scenes/band-mixamo-20261006/erik.glb": {
+   "sha256": "bff731f666ea3fdeb76372a1aa4abe605dbe39fb4142be1f5ec027abde1f18fd",
+   "size": 14056248
+  },
+  "realm/scenes/band-mixamo-20261006/hugo.glb": {
+   "sha256": "6656092cbc95962ae886e984d9a55c02729d674512ffe1ef898aebf484e2bf69",
+   "size": 12344512
+  },
+  "realm/scenes/band-mixamo-20261006/zikai.glb": {
+   "sha256": "481946d4872ac5c0da09ce7f1021b34ae5aa5b2e6aa1ab8a44a30d8a071f9a7b",
+   "size": 11938112
+  }
+ }
+}

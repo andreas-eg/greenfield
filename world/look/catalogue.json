@@ -1,0 +1,33 @@
+{
+  "_comment": "greenfield's look (SODER-WORLD-S72): the names the world uses and what the lens draws for them, as Söder's catalogue does. The bodies are the band's, shared with Söder.",
+  "bodies": {
+    "band_mixamo_hugo": {
+      "forward": "+z",
+      "title": "Hugo",
+      "mesh": "scenes/band-mixamo-20261006/hugo.glb",
+      "clips": "scenes/band-mixamo-20261006/hugo.glb",
+      "idle": "walk_forward",
+      "walk": "walk_forward"
+    },
+    "band_mixamo_erik": {
+      "forward": "+z",
+      "title": "Erik",
+      "mesh": "scenes/band-mixamo-20261006/erik.glb",
+      "clips": "scenes/band-mixamo-20261006/erik.glb",
+      "idle": "unarmed_idle",
+      "walk": "walk_forward"
+    },
+    "band_mixamo_zikai": {
+      "forward": "+z",
+      "title": "Zikai",
+      "mesh": "scenes/band-mixamo-20261006/zikai.glb",
+      "clips": "scenes/band-mixamo-20261006/zikai.glb",
+      "idle": "dance_shuffling",
+      "walk": "walk_forward_in_place"
+    }
+  },
+  "mounts": {
+    "door": "sth_door",
+    "walking_castle": "sth_walking_castle"
+  }
+}
