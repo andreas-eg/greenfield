@@ -16,5 +16,8 @@ Run it with a driver release (`lens/mac/build-driver.sh`):
 
     SPAWN=field CHART_PATH=world/charts <release>/world . 4041 4001
 
+The start room is also in `world/realm.json` (the realm's manifest, SF-DRV-S38): a driver
+that reads manifests starts players in the field without `SPAWN`.
+
 Written in LPC for mull, the driver; the efun reference is `/efuns` on a
 running world. Tracked in Studio as the GREENFIELD project.
