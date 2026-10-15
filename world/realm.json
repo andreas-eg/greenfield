@@ -1,0 +1,4 @@
+{
+  "start_room": "field",
+  "library": ["things", "vehicles", "charts", "look"]
+}
