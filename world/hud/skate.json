@@ -27,5 +27,6 @@
      "when": [{"attr": "skate_session", "eq": 3}, {"attr": "skate_record", "eq": 1}]},
     {"id": "best", "type": "text", "place": "centre_low", "text": "BEST HERE {skate_best}",
      "when": [{"attr": "skate_session", "eq": 3}, {"attr": "skate_record", "eq": 0}]}
-  ]
+  ],
+  "touch": {"phone": {"round": true}, "tablet": {"round": true}}
 }
