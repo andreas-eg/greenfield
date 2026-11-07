@@ -20,12 +20,18 @@ void login() {
         set_attr(this_player(), "skater", "hugo");
         set_body(this_player(), "skater_hugo");
     }
+    // Arcade or realistic (the lens reads `skate_style` and tunes sk8 by world/skate/tuning.txt's
+    // [arcade] or [realistic]): everyone starts arcade.
+    if (query_attr(this_player(), "skate_known") < 3) {
+        set_attr(this_player(), "skate_known", 3);
+        set_attr(this_player(), "skate_style", "arcade");
+    }
     // A reconnect never resumes a session or a line; the bests stay.
     set_attr(this_player(), "skate_session", 0);
     set_attr(this_player(), "skate_line", 0);
     set_attr(this_player(), "skate_mult", 10);
     set_attr(this_player(), "riding", 0);
-    foreach (string a : ({ "skate_stance", "skate_difficulty", "skate_score", "skate_line", "skate_mult",
+    foreach (string a : ({ "skate_style", "skate_stance", "skate_difficulty", "skate_score", "skate_line", "skate_mult",
                     "skate_trick", "skate_flash", "skate_bail", "skate_session", "skate_session_score",
                     "skate_session_left", "skate_result", "skate_record", "skate_best", "skate_spot",
                     "skate_landing", "riding", "skate_board" }))
@@ -149,6 +155,24 @@ int command(string verb, string args) {
             return 1;
         }
         set_attr(this_player(), "skate_stance", args);
+        write("You skate " + args + ".");
+        return 1;
+    }
+    // On their own (MENU's rows): the next one round.
+    if ((verb == "style" || verb == "stance" || verb == "difficulty") && (!args || args == "")) {
+        if (verb == "style") args = query_attr(this_player(), "skate_style") == "realistic" ? "arcade" : "realistic";
+        if (verb == "stance") args = query_attr(this_player(), "skate_stance") == "goofy" ? "regular" : "goofy";
+        if (verb == "difficulty") {
+            what = query_attr(this_player(), "skate_difficulty");
+            args = what == "easy" ? "normal" : what == "normal" ? "hardcore" : "easy";
+        }
+    }
+    if (verb == "style") {
+        if (args != "arcade" && args != "realistic") {
+            write("Style is arcade (big airs, easy grinds, long lines) or realistic (as a board really rides).");
+            return 1;
+        }
+        set_attr(this_player(), "skate_style", args);
         write("You skate " + args + ".");
         return 1;
     }

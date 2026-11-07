@@ -8,7 +8,7 @@
      "when": {"attr": "skate_flash", "eq": 1}, "for": 1.8},
     {"id": "trick2", "type": "text", "place": "centre_low", "look": "plate", "tone": "good", "text": "{skate_trick}",
      "when": {"attr": "skate_flash", "eq": 2}, "for": 1.8},
-    {"id": "spot", "type": "text", "place": "top_left", "text": "{skate_stance}  {skate_difficulty}",
+    {"id": "spot", "type": "text", "place": "top_left", "text": "{skate_style}  {skate_stance}  {skate_difficulty}",
      "when": {"attr": "skate_spot", "set": true}},
     {"id": "keys", "type": "text", "place": "top_left", "text": "W PUSH  S BRAKE  ARROWS DOWN-UP OLLIE  H MANUAL  S+A/D SLIDE  Z G GRAB  T BACK ON  F OFF",
      "when": {"attr": "riding", "set": true}},

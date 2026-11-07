@@ -21,6 +21,52 @@ rolling_friction_per_speed = 0.03
 # the rider stood frozen on Plattan's bench (player test 2026-11-07).
 grind_ledge_stall = 1.0
 
+# The two styles a player picks between (MENU, `style`). Arcade, the default: big airs,
+# grinds that find you, wide landings, long lines. Realistic: as a board really rides, a flat
+# ollie about knee high, grinds you have to aim for, landings that must be square.
+# A section may name a difficulty too ([arcade hardcore]); every word must hold.
+
+[arcade]
+rolling_friction_base = 0.12
+rolling_friction_per_speed = 0.02
+max_pushable_speed = 9.5
+push_dv_rest = 2.6
+push_dv_max = 1.5
+yaw_rate_max = 3.0
+ollie_max_h = 1.1
+traj_adjust = 1.0
+max_auto_spin_deg = 180
+max_spin_deg = 720
+spin_accel_deg = 2600
+land_angle_rest_deg = 70
+land_angle_fast_deg = 45
+impact_bail = 9
+flip_catch_deg = 120
+grind_lock_dist = 0.9
+grind_lean_time = 4.0
+grind_drag_base = 0.6
+manual_max_tilt_deg = 16
+manual_noise_deg = 1.0
+line_time = 6
+
+[realistic]
+max_pushable_speed = 8.0
+ollie_max_h = 0.6
+ollie_min_h = 0.15
+traj_adjust = 0.3
+max_auto_spin_deg = 0
+max_spin_deg = 540
+spin_accel_deg = 1800
+land_angle_rest_deg = 45
+land_angle_fast_deg = 28
+impact_bail = 6
+flip_catch_deg = 75
+grind_lock_dist = 0.25
+grind_lean_time = 2.0
+manual_max_tilt_deg = 12
+manual_noise_deg = 2.5
+line_time = 4
+
 [easy]
 
 [normal]

@@ -12,6 +12,9 @@
     "items": [
       {"id": "continue", "label": "Continue", "do": "continue"},
       {"id": "exit", "label": "Exit to main menu", "do": "exit"},
+      {"id": "style", "label": "Arcade / realistic", "cmd": "style"},
+      {"id": "stance", "label": "Regular / goofy", "cmd": "stance"},
+      {"id": "difficulty", "label": "Difficulty", "cmd": "difficulty"},
       {"id": "settings", "label": "Settings", "do": "settings"},
       {"id": "hud", "label": "Hud", "do": "hud"},
       {"id": "stuck", "label": "I'm stuck", "do": "stuck"}

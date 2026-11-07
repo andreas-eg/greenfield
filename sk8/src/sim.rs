@@ -456,8 +456,14 @@ impl Sim {
     }
 
     pub fn set_difficulty(&mut self, d: Difficulty, overrides: &str) {
+        self.set_tuning(d, overrides, "");
+    }
+
+    /// The difficulty, and a realm's `key = value` overrides with its `style`'s sections
+    /// (Beargarden's `[arcade]` and `[realistic]`).
+    pub fn set_tuning(&mut self, d: Difficulty, overrides: &str, style: &str) {
         self.t = Tuning::new(d);
-        self.t.apply_text(overrides);
+        self.t.apply_text_styled(overrides, style);
         self.rec.window = (self.t.flick_low, self.t.flick_high);
     }
 

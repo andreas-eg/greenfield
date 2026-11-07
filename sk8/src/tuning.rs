@@ -152,20 +152,35 @@ impl Tuning {
     /// Apply `key = value` lines; `#` starts a comment; `[easy]`/`[normal]`/`[hardcore]`
     /// sections apply only to that difficulty. Returns the keys it did not know.
     pub fn apply_text(&mut self, text: &str) -> Vec<String> {
+        self.apply_text_styled(text, "")
+    }
+
+    /// `apply_text`, and any other section (`[arcade]`, `[realistic]`) is a style: it applies
+    /// only when it is `style`'s, and none does when `style` is empty.
+    pub fn apply_text_styled(&mut self, text: &str, style: &str) -> Vec<String> {
         let mut unknown = Vec::new();
         let mut section: Option<Difficulty> = None;
+        let mut other_style = false;
         for raw in text.lines() {
             let line = raw.split('#').next().unwrap_or("").trim();
             if line.is_empty() {
                 continue;
             }
             if line.starts_with('[') && line.ends_with(']') {
-                section = match &line[1..line.len() - 1] {
-                    "easy" => Some(Difficulty::Easy),
-                    "normal" => Some(Difficulty::Normal),
-                    "hardcore" => Some(Difficulty::Hardcore),
-                    _ => None,
-                };
+                // Every word must hold: a difficulty, a style, or both (`[arcade hardcore]`).
+                section = None;
+                other_style = false;
+                for word in line[1..line.len() - 1].split_whitespace() {
+                    match word {
+                        "easy" => section = Some(Difficulty::Easy),
+                        "normal" => section = Some(Difficulty::Normal),
+                        "hardcore" => section = Some(Difficulty::Hardcore),
+                        w => other_style |= w != style,
+                    }
+                }
+                continue;
+            }
+            if other_style {
                 continue;
             }
             if let Some(d) = section {
@@ -188,6 +203,27 @@ impl Tuning {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_style_section_applies_only_to_its_style() {
+        let text = "ollie_max_h = 1.0\n[arcade]\nollie_max_h = 1.1\n[realistic]\nollie_max_h = 0.6\n[normal]\nline_time = 6\n";
+        let mut t = Tuning::new(Difficulty::Normal);
+        t.apply_text_styled(text, "realistic");
+        assert_eq!((t.ollie_max_h, t.line_time), (0.6, 6.0));
+        let mut t = Tuning::new(Difficulty::Normal);
+        t.apply_text_styled(text, "arcade");
+        assert_eq!(t.ollie_max_h, 1.1);
+        let mut t = Tuning::new(Difficulty::Normal);
+        t.apply_text(text);
+        assert_eq!(t.ollie_max_h, 1.0);
+        let both = "[arcade hardcore]\nollie_max_h = 0.7\n";
+        let mut t = Tuning::new(Difficulty::Hardcore);
+        t.apply_text_styled(both, "arcade");
+        assert_eq!(t.ollie_max_h, 0.7);
+        let mut t = Tuning::new(Difficulty::Normal);
+        t.apply_text_styled(both, "arcade");
+        assert_eq!(t.ollie_max_h, 0.95);
+    }
     #[test]
     fn sections_and_overrides() {
         let mut t = Tuning::new(Difficulty::Hardcore);

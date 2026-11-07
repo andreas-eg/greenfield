@@ -32,3 +32,14 @@ Still open from this session:
 - The keys hint is a permanent panel.
 - START A TWO-MINUTE SESSION is still offered during a session (hidden while rolling).
 - Not yet played: Övningsplanen, bails and respawn, other skaters, goofy stance, and the end of a session.
+
+## 2026-11-07, later: styles and others' boards
+
+- **Arcade and realistic.** A player setting (MENU: Arcade / realistic; `style`), arcade by
+  default, each a section of `world/skate/tuning.txt`. Measured in the lens: a full flick on
+  the flat pops 1.04 m in arcade and 0.56 m in realistic. `sk8/tests/styles.rs` holds them to
+  it: the pop, coasting, grind lock from 0.8 m off (arcade) against on the line only
+  (realistic), and a spin let go early, finished in arcade, bailed in realistic.
+- **Other players see the board.** A second lens watched a kickflip: the rider stood on the
+  deck in the skate pose and the board turned over under them. Before, other players saw the
+  rider stood beside nothing.
