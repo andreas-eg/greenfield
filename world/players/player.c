@@ -85,6 +85,12 @@ int command(string verb, string args) {
             skate_bail(this_player(), implode(explode(what, "_"), " "));
             return 1;
         }
+        // The rider's clip, from the lens that rides sk8: everyone else sees it.
+        if (sscanf(args, "clip %s", what) == 1) {
+            if (query_attr(this_player(), "riding") == "skateboard" && (sscanf(what, "skate_%s", room) == 1 || what == "walk"))
+                play_clip(this_player(), what, 3.0);
+            return 1;
+        }
         if (sscanf(args, "land %s", what) == 1) {
             set_attr(this_player(), "skate_landing", what);
             return 1;

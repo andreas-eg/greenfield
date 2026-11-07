@@ -88,7 +88,9 @@ The start menu is Greenfield's (`hud/menu.json`, `scenes/menu-greenfield.json`).
 SKATERS picks a skater. On a board:
 - W or Space pushes, S brakes, A and D lean.
 - The arrows are the right stick: down then up is an ollie.
-- Z and G grab, and F steps off.
+- H holds a manual, S with A or D powerslides, Z and G grab.
+- T brings the board back after a run-out, and F steps off.
+- On glass: the PUSH, FOOT BRAKE and OLLIE buttons, and the right thumb flicks.
 - A pad works as in the spec.
 - `LENS_SK8_TIMESCALE=0.25` slows the board down to look at a trick.
 - The world also takes `skater <name>`, `stance goofy` and a spot's name.

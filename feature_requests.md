@@ -44,9 +44,11 @@ and LENS-4 on the Mac (keys, mouse drag, gamepad, the glass's PUSH, FOOT BRAKE a
 It was played on the Mac against this realm on mull: board, push, carve, ollie, kickflip,
 grabs, a 50-50, banking, a session, a bail and respawn, travel to Rålis, and all six
 skaters. What is still open:
-- **LENS-4:** the iOS touch sticks (the right stick's flick on glass), haptics, and the
-  web lens.
-- **LENS-6:** other skaters' boards.
+- **LENS-4:** haptics, and the web lens (`crates/web` does not host sk8). On glass the
+  right thumb is now a floating stick (60 pt) for the flick. It was tested with scripted
+  swipes on the Mac, not yet on a phone.
+- **LENS-6:** others see the rider's skate clip (the lens says `skate clip <name>`, the
+  soul plays it with `play_clip`), but not the board's flips.
 - **The dependency:** the branch depends on `greenfield/sk8` by path, so it builds only
   beside this checkout. Merging it to the lens's main needs a git dependency or sk8
   vendored into the lens.
@@ -55,7 +57,9 @@ How it is played, for a person at the keys:
 - W or Space pushes, S or C brakes, A and D lean.
 - The arrow keys are the right stick. Down then up is an ollie; down, then round to the
   left and up is a kickflip.
-- Z and G are the triggers: crouch, and grab in the air.
+- Z and G are the triggers: crouch, and grab in the air. H holds a manual (Y a nose
+  manual), and S with A or D powerslides.
+- T brings the board back after a run-out, as walking to it and pushing does.
 - Dragging the mouse with the button held also flicks.
 - F steps off.
 
