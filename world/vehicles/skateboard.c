@@ -1,4 +1,4 @@
-// skateboard.c - a Greenfield board. One seat, ridden standing, nothing to hold.
+// skateboard.c - a Beargarden board. One seat, ridden standing, nothing to hold.
 //
 // Its drive says two things. To a lens that hosts sk8 (GF-REQ-LENS-1): "sim": "sk8", ride
 // it with the simulation on the spot's surfaces (the chart's "skate" file), tuned by the
@@ -11,7 +11,7 @@ string rider;
 
 void create() {
     set_name("A skateboard");
-    set_long("An 8.25 deck on 53 mm wheels, the grip tape still black, the tail barely chipped. Greenfield's: step on and skate.");
+    set_long("An 8.25 deck on 53 mm wheels, the grip tape still black, the tail barely chipped. Beargarden's: step on and skate.");
     set_look("none");
     rider = "";
     set_mount("skateboard");

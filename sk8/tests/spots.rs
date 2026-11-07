@@ -1,4 +1,4 @@
-//! Greenfield's spots are closed: a skater pushing flat out in any direction from anywhere
+//! Beargarden's spots are closed: a skater pushing flat out in any direction from anywhere
 //! on a spot meets a wall, a building or grass, never the edge of the world ("off the
 //! spot"). Found in a player test in the lens (2026-11-07): Plattan's upper terrace ended
 //! in nothing.

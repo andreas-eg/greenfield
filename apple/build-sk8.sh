@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build greenfield/sk8 as a static library for the platform Xcode is building, into
+# Build beargarden/sk8 as a static library for the platform Xcode is building, into
 # apple/build/lib/$PLATFORM_NAME/libsk8.a (the app links it with -lsk8), and the web's wasm.
 set -e
 export PATH="$HOME/.cargo/bin:/opt/homebrew/bin:$PATH"

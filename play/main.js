@@ -1,8 +1,8 @@
-// Greenfield in the browser: the sk8 simulation (wasm, greenfield/sk8) with the three input
+// Beargarden in the browser: the sk8 simulation (wasm, beargarden/sk8) with the three input
 // backends of the spec's C.2 (gamepad, keyboard and mouse, touch) filling one virtual
 // controller, and a plain three.js view of the spot, the board and a crude rider.
 //
-// The lens is where Greenfield is meant to run (greenfield/feature_requests.md); this page
+// The lens is where Beargarden is meant to run (beargarden/feature_requests.md); this page
 // is the harness that lets the feel be played and tuned on the web, iPhone Safari and a Mac
 // before that lands. Build: ./build.sh, then serve this folder (python3 -m http.server).
 
@@ -19,8 +19,8 @@ const BTN = { A: 0, B: 1, X: 2, Y: 3, LB: 4, RB: 5, L3: 6, R3: 7, DUP: 8, DDOWN:
 
 const $ = (id) => document.getElementById(id);
 const store = {
-  get(k, d) { try { const v = localStorage.getItem('greenfield.' + k); return v === null ? d : v; } catch { return d; } },
-  set(k, v) { try { localStorage.setItem('greenfield.' + k, v); } catch { /* private mode */ } },
+  get(k, d) { try { const v = localStorage.getItem('beargarden.' + k); return v === null ? d : v; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('beargarden.' + k, v); } catch { /* private mode */ } },
 };
 
 // ---- the simulation ------------------------------------------------------------------
@@ -31,7 +31,7 @@ try {
   ex = r.instance.exports;
 } catch (e) {
   $('err').style.display = 'flex';
-  $('err').textContent = 'sk8.wasm did not load (' + e + '). Run ./build.sh in greenfield/play first.';
+  $('err').textContent = 'sk8.wasm did not load (' + e + '). Run ./build.sh in beargarden/play first.';
   throw e;
 }
 const enc = new TextEncoder();
@@ -499,7 +499,7 @@ function drawSticks(c) {
 
 // ---- the world (mull) -------------------------------------------------------------------------
 //
-// Greenfield runs on mull: the world keeps the player, the spot, the board and the score. Its web
+// Beargarden runs on mull: the world keeps the player, the spot, the board and the score. Its web
 // port bridges a WebSocket to the line protocol (each frame one command line, each line the driver
 // writes one frame). The page logs in, goes to the spot, steps on a board, says where the board is
 // as the sim moves it, and tells the world what happened in `skate ...` lines
@@ -541,7 +541,7 @@ function worldConnect(url, spot, mark) {
       console.log('[world] ' + t);
       world.lines.push(t);
       if (world.lines.length > 50) world.lines.shift();
-      window.greenfieldWorldLines = world.lines;
+      window.beargardenWorldLines = world.lines;
     }
   };
   ws.onclose = () => { if (world.ws === ws) { world.ready = false; worldStatus('The world closed the connection.'); } };
@@ -652,6 +652,6 @@ $('go').addEventListener('click', async () => {
 await loadSpot(spotSel.value, Number($('difficulty').value), $('stance').value === '1');
 requestAnimationFrame(frame);
 // For tests and the console: the current frame and a way to step without a display.
-window.greenfield = { get frame() { return lastFrame; }, loadSpot, world, worldSend };
+window.beargarden = { get frame() { return lastFrame; }, loadSpot, world, worldSend };
 // ?autostart=1 skates at once (with ?world=... it joins that world): for a test run headless.
 if (new URLSearchParams(location.search).get('autostart')) $('go').click();

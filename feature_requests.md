@@ -1,8 +1,8 @@
-# Greenfield: what it needs from the lens, mull, GeoGen and Studio
+# Beargarden: what it needs from the lens, mull, GeoGen and Studio
 
-Greenfield is the Stockholm skate game, built on mull from the sk8r specification
+Beargarden is the Stockholm skate game, built on mull from the sk8r specification
 (`sk8t/skateboard.md`). Everything in this repository was written without touching mull,
-the lens, GeoGen or Studio. What follows is what those need to add for Greenfield to be the
+the lens, GeoGen or Studio. What follows is what those need to add for Beargarden to be the
 game on iOS, macOS and the web. Each request says what exists here to build on, and how to
 tell it is done.
 
@@ -28,7 +28,7 @@ What is here now (2026-11-07):
   Mac (rendering offscreen, `-selftest`, the screen being locked) each joined the world,
   boarded at Plattan, Rålis or Fryshuset, rode, and was drawn.
 
-These clients are Greenfield until the lens hosts sk8. They draw a crude rider and the
+These clients are Beargarden until the lens hosts sk8. They draw a crude rider and the
 spots' plain geometry. The lens's renderer, characters and the surveyed Stockholm are what
 the requests below bring. The apps are not signed for devices or TestFlight from here
 (GF-REQ-STUDIO-2).
@@ -37,9 +37,9 @@ the requests below bring. The apps are not signed for devices or TestFlight from
 
 ## Lens
 
-**Status, 2026-11-07:** the lens branch `feat/greenfield-sk8` (worktree
+**Status, 2026-11-07:** the lens branch `feat/beargarden-sk8` (worktree
 `lens.worktrees/lens-sk8`, built with `--features lens-app/sk8` and
-`LENS_REALM=<greenfield>/world`) does LENS-1, LENS-2, LENS-3 (as meshes, below), LENS-5,
+`LENS_REALM=<beargarden>/world`) does LENS-1, LENS-2, LENS-3 (as meshes, below), LENS-5,
 and LENS-4 on the Mac (keys, mouse drag, gamepad, the glass's PUSH, FOOT BRAKE and OLLIE).
 It was played on the Mac against this realm on mull: board, push, carve, ollie, kickflip,
 grabs, a 50-50, banking, a session, a bail and respawn, travel to Rålis, and all six
@@ -49,7 +49,7 @@ skaters. What is still open:
   swipes on the Mac, not yet on a phone.
 - **LENS-6:** others see the rider's skate clip (the lens says `skate clip <name>`, the
   soul plays it with `play_clip`), but not the board's flips.
-- **The dependency:** the branch depends on `greenfield/sk8` by path, so it builds only
+- **The dependency:** the branch depends on `beargarden/sk8` by path, so it builds only
   beside this checkout. Merging it to the lens's main needs a git dependency or sk8
   vendored into the lens.
 
@@ -72,12 +72,12 @@ charts name both.
 
 The board (`world/vehicles/skateboard.c`) declares
 `set_drive((["kind": "kick", ..., "sim": "sk8", "sim_tuning": "skate/tuning.txt", "sim_stance_attr": "skate_stance", "sim_difficulty_attr": "skate_difficulty", "sim_events": "skate"]))`.
-Today's lens reads `kind: kick` and rides it as Söder's board, so Greenfield is rideable
+Today's lens reads `kind: kick` and rides it as Söder's board, so Beargarden is rideable
 now, just not with the sk8 feel.
 
 A lens that does this request:
 
-1. Depends on `greenfield/sk8` (a path or git dependency; it needs only serde and
+1. Depends on `beargarden/sk8` (a path or git dependency; it needs only serde and
    serde_json). It uses `sk8::Sim` directly, not the C ABI.
 2. On boarding, builds `sk8::World` from the chart's `"skate"` file
    (`charts/<spot>.json` has `"skate": "<spot>.skate.json"`, beside it in the realm). It
@@ -176,7 +176,7 @@ updates, and the lens draws other boards with them.
 
 ### GF-REQ-MULL-1: `%f` in `sscanf`
 
-`sscanf` takes `%s` and `%d` only. Greenfield works round it with `%s` and `to_float`
+`sscanf` takes `%s` and `%d` only. Beargarden works round it with `%s` and `to_float`
 (`skate_rules.c skate_bank`). A `%f` would make the protocol plain.
 
 ### GF-REQ-MULL-2: storage that outlives a reboot, shared by a realm
@@ -205,7 +205,7 @@ parsing in LPC, and the lens could send several events in one frame.
 ### GF-REQ-MULL-5: exits with names
 
 `add_exit("ralis", "ralis")` is accepted, but `go ralis` is refused: `move` looks the word
-up in a fixed table of compass directions. Greenfield's spots are linked by the soul
+up in a fixed table of compass directions. Beargarden's spots are linked by the soul
 instead (a spot's name `transport`s you there, board and all). Needed: an exit whose
 direction is any word, so a realm can say `add_exit("tunnelbana", "ralis")`.
 
@@ -237,15 +237,15 @@ skate file, unless the lens draws skate files (GF-REQ-LENS-3).
 
 ## Studio and releases
 
-### GF-REQ-STUDIO-1: track Greenfield
+### GF-REQ-STUDIO-1: track Beargarden
 
-The README says Greenfield is the GREENFIELD project in Studio. Nothing was filed from
+The README says Beargarden is the GREENFIELD project in Studio. Nothing was filed from
 here. Stories should be filed for the requests above, with one for the work done here,
 whose evidence is `cargo test` in `sk8/` and the telnet session in this file's history.
 
 ### GF-REQ-STUDIO-2: ship it
 
-- **iOS and macOS**: the lens app shipping Greenfield as a world beside Söder (TestFlight
+- **iOS and macOS**: the lens app shipping Beargarden as a world beside Söder (TestFlight
   from the mini, as Söder's builds are), once GF-REQ-LENS-1 to 4 land.
 - **Web**: a hosted world on play.eldergrounds.com. Meanwhile `play/` can be published
   as a static page (`play/build.sh`, then the folder as it is). It needs HTTPS for the

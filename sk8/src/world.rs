@@ -2,7 +2,7 @@
 //! polylines (spec B.2.1, B.3), with the spatial queries of B.3.3.
 //!
 //! A spot is loaded from a `*.skate.json` file the realm ships beside its chart
-//! (`greenfield/world/charts/<spot>.skate.json`); the format is `SpotFile` below.
+//! (`beargarden/world/charts/<spot>.skate.json`); the format is `SpotFile` below.
 
 use crate::math::*;
 use serde::{Deserialize, Serialize};

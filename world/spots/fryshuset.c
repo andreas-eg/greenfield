@@ -1,6 +1,6 @@
-// fryshuset.c - Fryshuset, a Greenfield skate spot.
+// fryshuset.c - Fryshuset, a Beargarden skate spot.
 //
-// Its surfaces are charts/fryshuset.skate.json, written by greenfield/sk8 (cargo run --bin
+// Its surfaces are charts/fryshuset.skate.json, written by beargarden/sk8 (cargo run --bin
 // spots) from the layout in sk8/src/spots.rs: the chart charts/fryshuset.json names it for the
 // lens's sk8 (GF-REQ-LENS-1). The other spots are a ride away: say a spot's name (players/player.c).
 void create() {

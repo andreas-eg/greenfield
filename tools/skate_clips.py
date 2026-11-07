@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Greenfield's skate clips as poses keyed in ActionForge (tools/actionforge.py reads the JSON
+"""Beargarden's skate clips as poses keyed in ActionForge (tools/actionforge.py reads the JSON
 this writes). The pose is ActionForge's own rig (UE names) facing +Z with the board under the
 feet along X, nose at +X (regular: left foot forward). retarget_skate.py turns it a quarter so
 the nose is the body's forward.

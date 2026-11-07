@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Author Greenfield's skate clips in ActionForge (https://actionforge.app), driven over the
+"""Author Beargarden's skate clips in ActionForge (https://actionforge.app), driven over the
 Chrome DevTools protocol, and download each as a GLB on the Mixamo skeleton.
 
 ActionForge runs in a Chrome started with --remote-debugging-port=9333 on actionforge.app.

@@ -1,6 +1,6 @@
 #!/bin/sh
 # The skaters: the band's and three CharGen bodies (Söder's rider-s4 packages, native rigs,
-# not in git) with Greenfield's skate clips (art/actionforge, authored in ActionForge by
+# not in git) with Beargarden's skate clips (art/actionforge, authored in ActionForge by
 # tools/actionforge.py from tools/skate_clips.json) retargeted onto each, into
 # world/scenes/skaters/ where the catalogue's skater_* bodies point.
 #

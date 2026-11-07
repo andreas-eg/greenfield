@@ -1,7 +1,7 @@
-// player.c - the soul every Greenfield player lives by (SF-WORLD-S16): what they skate
+// player.c - the soul every Beargarden player lives by (SF-WORLD-S16): what they skate
 // with, what the world keeps of what they do, and what the lens draws of it.
 //
-// The ride itself is the lens's: on a Greenfield board it runs the sk8 simulation (the
+// The ride itself is the lens's: on a Beargarden board it runs the sk8 simulation (the
 // board's drive says so, vehicles/skateboard.c) and says what happened in `skate ...`
 // lines. This soul hears them, keeps score by support/skate_rules.c, runs sessions, and
 // keeps a player's stance and difficulty, which the lens reads from their attributes.
@@ -113,7 +113,7 @@ int command(string verb, string args) {
         write("Character selected.");
         return 1;
     }
-    // Outfits have no art in Greenfield yet: taken and kept, nothing else.
+    // Outfits have no art in Beargarden yet: taken and kept, nothing else.
     if (verb == "outfit") {
         set_attr(this_player(), "outfit", args);
         return 1;

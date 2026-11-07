@@ -1,7 +1,7 @@
-# Greenfield for iOS and macOS, native: SwiftUI and SceneKit around the sk8 simulation, which is
+# Beargarden for iOS and macOS, native: SwiftUI and SceneKit around the sk8 simulation, which is
 # linked in as a static library built for the platform being built (build-sk8.sh, pre-build).
-#   xcodegen generate, then the Greenfield-iOS or Greenfield-macOS scheme.
-name: Greenfield
+#   xcodegen generate, then the Beargarden-iOS or Beargarden-macOS scheme.
+name: Beargarden
 options:
   bundleIdPrefix: com.eldergrounds
   deploymentTarget:
@@ -37,13 +37,13 @@ targetTemplates:
           cp "$SRCROOT"/../world/charts/*.skate.json "$dest/"
         basedOnDependencyAnalysis: false
 targets:
-  Greenfield-iOS:
+  Beargarden-iOS:
     templates: [Game]
     platform: iOS
     info:
       path: Info-iOS.plist
       properties:
-        CFBundleDisplayName: Greenfield
+        CFBundleDisplayName: Beargarden sk8r
         UILaunchScreen: {}
         UIRequiresFullScreen: true
         UIStatusBarHidden: true
@@ -51,21 +51,21 @@ targets:
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         GCSupportsControllerUserInteraction: true
         GCSupportedGameControllers: [{ProfileName: ExtendedGamepad}]
-        NSLocalNetworkUsageDescription: Greenfield connects to a Greenfield world on your network.
+        NSLocalNetworkUsageDescription: Beargarden sk8r connects to a Beargarden world on your network.
         NSAppTransportSecurity: {NSAllowsArbitraryLoads: true, NSAllowsLocalNetworking: true}
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.eldergrounds.greenfield
+        PRODUCT_BUNDLE_IDENTIFIER: com.eldergrounds.beargarden
         TARGETED_DEVICE_FAMILY: "1,2"
-  Greenfield-macOS:
+  Beargarden-macOS:
     templates: [Game]
     platform: macOS
     info:
       path: Info-macOS.plist
       properties:
-        CFBundleDisplayName: Greenfield
+        CFBundleDisplayName: Beargarden sk8r
         LSApplicationCategoryType: public.app-category.sports-games
         NSAppTransportSecurity: {NSAllowsArbitraryLoads: true, NSAllowsLocalNetworking: true}
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.eldergrounds.greenfield.mac
+        PRODUCT_BUNDLE_IDENTIFIER: com.eldergrounds.beargarden.mac

@@ -2,7 +2,7 @@
 //! lines with a timer and multiplier, and the "already been done" repetition rule.
 //!
 //! The lens runs this for instant feedback; the realm re-scores what it is told
-//! (greenfield/world/support/skate_rules.c) and is the authority for anything kept.
+//! (beargarden/world/support/skate_rules.c) and is the authority for anything kept.
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

@@ -1,4 +1,4 @@
-// sk8.h - the C ABI of greenfield/sk8 (sk8/src/ffi.rs), for the Swift app.
+// sk8.h - the C ABI of beargarden/sk8 (sk8/src/ffi.rs), for the Swift app.
 // The structs match sk8::input::VirtualController and sk8::frame::Frame (repr(C);
 // sk8/src/frame.rs tests their size and offsets).
 #pragma once

@@ -1,11 +1,11 @@
 # Play tests
 
-What playing Greenfield in the lens showed, and what was done about it. Lens-side findings
+What playing Beargarden in the lens showed, and what was done about it. Lens-side findings
 (the lens as a client for several games) are in `LENS_IMPROVEMENTS.md`.
 
 ## 2026-11-07, lens on the Mac, played live
 
-The lens (`feat/greenfield-sk8`) run against the local realm, ridden by an agent through
+The lens (`feat/beargarden-sk8`) run against the local realm, ridden by an agent through
 `LENS_PLAY_LIVE`: one step at a time, each chosen from the last screenshot and the rider's
 trail. Erik's body, regular, normal difficulty.
 
@@ -17,7 +17,7 @@ trail. Erik's body, regular, normal difficulty.
 | Coasting | 3 m/s rolled to a stop in about 6 s; a line was mostly pushing | `world/skate/tuning.txt`: rolling friction about halved (0.18 + 0.03 v) |
 | Finding something to skate from the Plattan start | It faced open plaza, with every ledge behind or to the side, and keys steer about 10 deg in 0.3 s | Start moved onto the east bench's line, 0.4 m off it, facing it (`sk8/src/spots.rs`, `support/skate_rules.c`) |
 | FS 50-50 on the east bench | Locked, 3.4 m, leaned off at the end, then re-locked the same ledge every half second, stuck on top | Fixed in sk8 `grind.rs`: not onto the rail just fallen off until a pop or the ground away from it; test added. Now: 50-50, lean off, clean landing, 384 |
-| A slow 50-50 (3.5 m/s in) | Drag stopped it 3.4 m along and the spec's 4 s ledge stall held the rider frozen on the bench | `grind_ledge_stall` tunable (spec 4 s, so C.3 step 6 holds), Greenfield 1 s: off, clean, 386 |
+| A slow 50-50 (3.5 m/s in) | Drag stopped it 3.4 m along and the spec's 4 s ledge stall held the rider frozen on the bench | `grind_ledge_stall` tunable (spec 4 s, so C.3 step 6 holds), Beargarden 1 s: off, clean, 386 |
 | The offers while riding | The scoreboard, session and STEP ON covered the ledge being ground | The lens shows only STEP OFF while the board rolls |
 | Kickflip, heelflip (arrows down, then down-left or down-right to up) | Both landed clean, about 370 each | - |
 | Grab (Z in the air) | Mute, clean, 308 | - |

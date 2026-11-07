@@ -1,4 +1,4 @@
-// Greenfield on iOS and macOS, native: the sk8 simulation linked in (libsk8.a), stepped from
+// Beargarden on iOS and macOS, native: the sk8 simulation linked in (libsk8.a), stepped from
 // SceneKit's display-linked render loop at the display's rate with sk8's fixed 1/60 s tick and
 // interpolation inside (B.1, C.2.5); GameController for pads, keyboards and mice; touch sticks
 // on iOS; the mull world over its WebSocket bridge.
@@ -346,7 +346,7 @@ struct GameScreen: View {
 
     private var menu: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Greenfield").font(.title2.bold())
+            Text("Beargarden sk8r").font(.title2.bold())
             Text("Stockholm skate, on the sk8 simulation").font(.caption).foregroundStyle(.secondary)
             Picker("Spot", selection: $spot) { ForEach(Spots.all, id: \.id) { Text($0.title).tag($0.id) } }
             Picker("Difficulty", selection: $difficulty) { Text("Easy").tag(0); Text("Normal").tag(1); Text("Hardcore").tag(2) }
@@ -383,7 +383,7 @@ struct GameScreen: View {
 }
 
 @main
-struct GreenfieldApp: App {
+struct BeargardenApp: App {
     private let game = Game()
 
     init() {
@@ -397,7 +397,7 @@ struct GreenfieldApp: App {
             g.hud.menu = false
         }
         let seconds = d.double(forKey: "selftest")
-        if seconds > 0 { GreenfieldApp.runSelfTest(g, seconds: seconds, snapshot: d.string(forKey: "snapshot")) }
+        if seconds > 0 { BeargardenApp.runSelfTest(g, seconds: seconds, snapshot: d.string(forKey: "snapshot")) }
     }
 
     /// Ride for `seconds` on a timer (no window needs to be on a screen), render offscreen,
@@ -418,7 +418,7 @@ struct GreenfieldApp: App {
                 "snapshot": shot,
             ]
             if let data = try? JSONSerialization.data(withJSONObject: summary), let s = String(data: data, encoding: .utf8) {
-                print("GREENFIELD-SELFTEST " + s)
+                print("BEARGARDEN-SELFTEST " + s)
             }
             fflush(stdout)
             UserDefaults.standard.synchronize()

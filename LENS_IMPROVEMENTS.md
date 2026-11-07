@@ -1,19 +1,19 @@
 # Lens improvements
 
-What Greenfield ran into in the lens: places where it is still Söder's client rather than a
+What Beargarden ran into in the lens: places where it is still Söder's client rather than a
 window onto several kinds of game. Each entry says what happened, and what a more generic lens
 might do instead. Found while building and playing the skate game (lens branch
-`feat/greenfield-sk8`). Nothing here has been decided.
+`feat/beargarden-sk8`). Nothing here has been decided.
 
-## How Greenfield uses the lens today
+## How Beargarden uses the lens today
 
-- sk8 is an optional cargo feature (`lens-app/sk8`) with a path dependency on `greenfield/sk8`.
+- sk8 is an optional cargo feature (`lens-app/sk8`) with a path dependency on `beargarden/sk8`.
   A board whose drive says `"sim":"sk8"` hands the frame to `skate.rs`, which runs the camera,
   board, body clips and input, in place of walking and the vehicle update.
 - Everything else is Söder's: the start menu (CONTINUE, NEW GAME with naming and save slots,
   CHARACTERS and outfits), the menu backdrop as a director scene, walking and the walkmask, the
   HUD system, the realm connection and scripted play.
-- Greenfield fills in that shape: `menu_scene`, `hud/*.json`, a catalogue. Some verbs (`outfit`)
+- Beargarden fills in that shape: `menu_scene`, `hud/*.json`, a catalogue. Some verbs (`outfit`)
   exist only because the menu sends them.
 
 ## Findings
@@ -46,7 +46,7 @@ might do instead. Found while building and playing the skate game (lens branch
 
 5. **Menu input depends on the backdrop (from reading the code, not yet seen).** The start
    menu takes arrows, Enter and Space only when `state.camera` is `None`; with a camera they go
-   to walking. Greenfield's menu scene is a director scene; whether it has a camera here is not
+   to walking. Beargarden's menu scene is a director scene; whether it has a camera here is not
    checked. (The menu did ignore keys on 2026-11-07, but so did everything: the OS was dropping
    the synthetic events, item 11.) Menu input should not depend on what the backdrop is.
 6. **Esc quits from the menu scene** (the director scene's "Esc quits"), where a player would

@@ -1,6 +1,6 @@
 {
-  "_comment": "Written by greenfield/sk8 (cargo run --bin spots): Plattan, Sergels torg, a skate spot. The lens draws spot_plattan.glb (the same surfaces, coloured by kind) and rides plattan.skate.json with sk8 (GF-REQ-LENS-1). Do not edit.",
-  "assets": "conditioned/greenfield",
+  "_comment": "Written by beargarden/sk8 (cargo run --bin spots): Plattan, Sergels torg, a skate spot. The lens draws spot_plattan.glb (the same surfaces, coloured by kind) and rides plattan.skate.json with sk8 (GF-REQ-LENS-1). Do not edit.",
+  "assets": "conditioned/beargarden",
   "atmosphere": {
     "color": [
       0.72,

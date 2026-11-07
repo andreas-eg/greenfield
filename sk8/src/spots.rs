@@ -1,7 +1,7 @@
-//! Greenfield's spots. The test plaza is the spec's Phase 0 level (D.2): every feature the
+//! Beargarden's spots. The test plaza is the spec's Phase 0 level (D.2): every feature the
 //! acceptance tests ride. The Stockholm spots are schematic layouts of real places with
 //! real-world dimensions where they are known; their survey-accurate geometry is a GeoGen
-//! request (greenfield/feature_requests.md, GF-REQ-GEOGEN-1).
+//! request (beargarden/feature_requests.md, GF-REQ-GEOGEN-1).
 
 use crate::build::Builder;
 use crate::math::*;

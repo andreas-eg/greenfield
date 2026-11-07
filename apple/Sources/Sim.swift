@@ -1,4 +1,4 @@
-// The sk8 simulation (greenfield/sk8, linked as libsk8.a) seen from Swift, and the spot files
+// The sk8 simulation (beargarden/sk8, linked as libsk8.a) seen from Swift, and the spot files
 // it rides (world/charts/<spot>.skate.json, bundled as "spots").
 
 import Foundation

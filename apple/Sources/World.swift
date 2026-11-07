@@ -1,4 +1,4 @@
-// The mull world. Greenfield runs on it: the world keeps the player, the spot, the board and the
+// The mull world. Beargarden runs on it: the world keeps the player, the spot, the board and the
 // score. Its web port bridges a WebSocket to the line protocol (a frame is a command line, each
 // line the driver writes comes back as a frame). This logs in, rides to the spot, steps on a
 // board, says where the board is as sk8 moves it, and tells the world what happened in `skate

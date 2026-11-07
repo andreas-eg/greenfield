@@ -1,5 +1,5 @@
 {
-  "_comment": "greenfield's look (SODER-WORLD-S72): the names the world uses and what the lens draws for them, as Söder's catalogue does. The skaters are the band's and three CharGen bodies (Söder's rider-s4 packages) with Greenfield's skate clips, authored in ActionForge and retargeted onto each (tools/make_skaters.sh); the lens plays the clip sk8 names (skate_*) while one rides.",
+  "_comment": "beargarden's look (SODER-WORLD-S72): the names the world uses and what the lens draws for them, as Söder's catalogue does. The skaters are the band's and three CharGen bodies (Söder's rider-s4 packages) with Beargarden's skate clips, authored in ActionForge and retargeted onto each (tools/make_skaters.sh); the lens plays the clip sk8 names (skate_*) while one rides.",
   "bodies": {
     "skater_hugo": {
       "forward": "+z",

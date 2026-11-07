@@ -1,6 +1,6 @@
-# greenfield
+# beargarden
 
-Greenfield is the Stockholm skate game, on mull (the small-forest driver), for iOS, macOS
+Beargarden is the Stockholm skate game, on mull (the small-forest driver), for iOS, macOS
 and the web. Its movement follows the sk8r specification (`~/src/eg/sk8t/skateboard.md`):
 the right stick is the board (Flickit), the left stick is the body, and there are no
 balance meters. Grinds are pulled on by prediction, not by buttons.
@@ -41,7 +41,7 @@ castle, SODER-WORLD-S72). The field and the castle are still here.
   (`build-sk8.sh` builds it for the platform being built), stepped from SceneKit's
   display-linked loop, with GameController pads, keyboards and mice, floating touch sticks
   on iOS, a SwiftUI menu and HUD, and the world over its WebSocket bridge (spec C.2.5).
-  `xcodegen generate`, then the `Greenfield-iOS` or `Greenfield-macOS` scheme. Launch
+  `xcodegen generate`, then the `Beargarden-iOS` or `Beargarden-macOS` scheme. Launch
   arguments `-world ws://host:4062/ws -spot ralis` join a world at once;
   `-selftest 12 -snapshot shot.png -demo YES` rides, renders offscreen and prints a summary.
 - `tools/`, `art/actionforge/`: the skaters. Their 13 skate clips (ride, push, ollie, air,
@@ -49,7 +49,7 @@ castle, SODER-WORLD-S72). The field and the castle are still here.
   are retargeted onto the band's bodies (Hugo, Erik, Zikai) and three CharGen ones (Sanna,
   Mo, Lova) into `world/scenes/skaters/` (not in git). The catalogue names them
   `skater_*`. See `tools/README.md`.
-- `conditioned/greenfield/`: the spots' meshes for the lens (the floor's paving tiled,
+- `conditioned/beargarden/`: the spots' meshes for the lens (the floor's paving tiled,
   the rest coloured by surface), written with the charts.
 - `feature_requests.md`: what the lens, mull, GeoGen and Studio need to add (sk8 in the
   lens, input backends, clips, storage, score proofs, surveyed spots).
@@ -59,7 +59,7 @@ castle, SODER-WORLD-S72). The field and the castle are still here.
 The realm on a driver checkout (nothing in the driver changes):
 
     cd ~/src/eg/repos/small-forest/repos/engine
-    PORT=4061 WEB_PORT=4062 elixir --no-halt -S mix run --no-start ~/src/eg/greenfield/run-realm.exs
+    PORT=4061 WEB_PORT=4062 elixir --no-halt -S mix run --no-start ~/src/eg/beargarden/run-realm.exs
 
 Then `nc localhost 4061`, or connect a lens. A telnet player moves with `jump <x> <z>`.
 Commands: `board` (onto a free board here), `use a skateboard`, `session`, `stance goofy`,
@@ -75,16 +75,16 @@ spot, `&demo=1` rides a scripted line). Click to lock the mouse, which is the ri
 pull back, then push forward fast to ollie. W/A/S/D steer and push; Space pushes. On a
 phone, the left half is the body and the right half is the board. A gamepad works too.
 
-In the lens (its branch `feat/greenfield-sk8` hosts sk8 for this realm's boards):
+In the lens (its branch `feat/beargarden-sk8` hosts sk8 for this realm's boards):
 
     tools/make_skaters.sh                                    # once: the skaters
     cd ~/src/eg/lens.worktrees/lens-sk8
-    LENS_REALM=$HOME/src/eg/greenfield/world cargo build --release -p lens-app --features lens-app/sk8
+    LENS_REALM=$HOME/src/eg/beargarden/world cargo build --release -p lens-app --features lens-app/sk8
     # run it from a folder whose conditioned/ holds the lens's conditioned/* and
-    # conditioned/greenfield -> greenfield/conditioned/greenfield
+    # conditioned/beargarden -> beargarden/conditioned/beargarden
     LENS_LOOK=folder LENS_ADDR=127.0.0.1:4061 LENS_WEB=127.0.0.1:4062 <target>/release/lens-app
 
-The start menu is Greenfield's (`hud/menu.json`, `scenes/menu-greenfield.json`).
+The start menu is Beargarden's (`hud/menu.json`, `scenes/menu-beargarden.json`).
 SKATERS picks a skater. On a board:
 - W or Space pushes, S brakes, A and D lean.
 - The arrows are the right stick: down then up is an ollie.
@@ -97,7 +97,7 @@ SKATERS picks a skater. On a board:
 
 The apps:
 
-    cd apple && xcodegen generate && open Greenfield.xcodeproj
+    cd apple && xcodegen generate && open Beargarden.xcodeproj
 
 The simulation's tests:
 

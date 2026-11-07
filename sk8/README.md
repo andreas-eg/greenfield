@@ -1,6 +1,6 @@
 # sk8
 
-Greenfield's skate simulation: the sk8r specification (`~/src/eg/sk8t/skateboard.md`) as a
+Beargarden's skate simulation: the sk8r specification (`~/src/eg/sk8t/skateboard.md`) as a
 fixed-step (1/60 s) library with no platform code.
 
 | Module | Spec |
@@ -14,7 +14,7 @@ fixed-step (1/60 s) library with no platform code.
 | `tuning.rs` | every number, the three difficulty sets, `key = value` overrides (C.1, B.15) |
 | `frame.rs` | what a renderer reads each tick, a `repr(C)` struct |
 | `ffi.rs` | the C ABI for Swift and the browser |
-| `build.rs`, `spots.rs` | the spot builder and Greenfield's spots; `src/bin/spots.rs` writes them into the realm |
+| `build.rs`, `spots.rs` | the spot builder and Beargarden's spots; `src/bin/spots.rs` writes them into the realm |
 
 `cargo test` runs the unit tests and `tests/acceptance.rs`, the spec's C.3 checks ridden with
 scripted controllers: coasting a 10° hill, the carve radius, a bank and back, a bowl wall to

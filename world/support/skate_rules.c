@@ -1,12 +1,12 @@
-// skate_rules.c - Greenfield's scoring, as the world keeps it. A content library inherited
+// skate_rules.c - Beargarden's scoring, as the world keeps it. A content library inherited
 // by the soul (players/player.c) and the session things, not a room.
 //
-// The lens rides the board with the sk8 simulation (greenfield/sk8) and scores as it goes
+// The lens rides the board with the sk8 simulation (beargarden/sk8) and scores as it goes
 // for instant feedback; it tells the world what happened in `skate ...` lines. The world
-// decides what is kept: it takes a sequence only from a rider on a Greenfield board in a
+// decides what is kept: it takes a sequence only from a rider on a Beargarden board in a
 // spot, never more than its own cap for the tricks named, and never faster than a skater
 // can land them. Trick values are the spec's (sk8t/skateboard.md B.14.1), the same table
-// as greenfield/sk8/src/scoring.rs.
+// as beargarden/sk8/src/scoring.rs.
 //
 // Lines the lens sends (GF-REQ-LENS-2):
 //   skate banked <points> <multiplier> <name>+<name>+...   a sequence banked into the line
@@ -75,7 +75,7 @@ int skate_cap(string *names, float multiplier) {
     return to_int(to_float(total) * 1.5 * 1.1 * multiplier);
 }
 
-// Is `who` somewhere Greenfield scores: on one of its boards, in one of its spots?
+// Is `who` somewhere Beargarden scores: on one of its boards, in one of its spots?
 int skate_scoring(object who) {
     if (query_attr(who, "riding") != "skateboard") return 0;
     return query_attr(who, "skate_spot") != 0;

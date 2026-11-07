@@ -1,6 +1,6 @@
 # tools
 
-How Greenfield's skaters are made: the band's and CharGen's bodies with skate animations
+How Beargarden's skaters are made: the band's and CharGen's bodies with skate animations
 authored in [ActionForge](https://actionforge.app).
 
 | File | What it does |

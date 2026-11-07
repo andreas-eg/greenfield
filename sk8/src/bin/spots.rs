@@ -5,7 +5,7 @@
 //! the rails, coloured by surface from a small palette texture, until GeoGen has surveyed
 //! meshes for the spots, GF-REQ-GEOGEN-1).
 //!
-//!     cargo run --bin spots -- ../world/charts ../conditioned/greenfield
+//!     cargo run --bin spots -- ../world/charts ../conditioned/beargarden
 
 use sk8::world::{RailKind, RailMaterial, SpotFile};
 
@@ -283,7 +283,7 @@ fn glb(g: &Geo, png: Vec<u8>, name: &str, tile: Option<f32>) -> Vec<u8> {
         bin.push(0);
     }
     let doc = serde_json::json!({
-        "asset": {"version": "2.0", "generator": "greenfield/sk8 spots"},
+        "asset": {"version": "2.0", "generator": "beargarden/sk8 spots"},
         "scene": 0, "scenes": [{"nodes": [0]}],
         "nodes": [{"mesh": 0, "name": name}],
         "meshes": [{"primitives": prims}],
@@ -314,7 +314,7 @@ fn glb(g: &Geo, png: Vec<u8>, name: &str, tile: Option<f32>) -> Vec<u8> {
 
 fn main() {
     let dir = std::env::args().nth(1).unwrap_or_else(|| "../world/charts".into());
-    let meshes = std::env::args().nth(2).unwrap_or_else(|| "../conditioned/greenfield".into());
+    let meshes = std::env::args().nth(2).unwrap_or_else(|| "../conditioned/beargarden".into());
     std::fs::create_dir_all(&meshes).unwrap();
     for f in sk8::spots::all() {
         let skate = format!("{}/{}.skate.json", dir, f.name);
@@ -327,8 +327,8 @@ fn main() {
         let glb = things;
         let b = bounds(&f);
         let chart = serde_json::json!({
-            "_comment": format!("Written by greenfield/sk8 (cargo run --bin spots): {}, a skate spot. The lens draws spot_{}.glb (the same surfaces, coloured by kind) and rides {}.skate.json with sk8 (GF-REQ-LENS-1). Do not edit.", f.title, f.name, f.name),
-            "assets": "conditioned/greenfield",
+            "_comment": format!("Written by beargarden/sk8 (cargo run --bin spots): {}, a skate spot. The lens draws spot_{}.glb (the same surfaces, coloured by kind) and rides {}.skate.json with sk8 (GF-REQ-LENS-1). Do not edit.", f.title, f.name, f.name),
+            "assets": "conditioned/beargarden",
             "atmosphere": { "color": [0.72, 0.8, 0.88, 1.0], "start": 80.0, "end": 320.0 },
             "instances": [
                 { "mesh": format!("spot_{}_floor", f.name), "pos": [0.0, 0.0, 0.0], "rot_y": 0.0, "scale": 1.0 },
