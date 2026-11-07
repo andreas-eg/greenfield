@@ -75,27 +75,48 @@ spot, `&demo=1` rides a scripted line). Click to lock the mouse, which is the ri
 pull back, then push forward fast to ollie. W/A/S/D steer and push; Space pushes. On a
 phone, the left half is the body and the right half is the board. A gamepad works too.
 
-In the lens (its branch `feat/beargarden-sk8` hosts sk8 for this realm's boards):
+In the lens on this Mac, in one go (the lens's branch `feat/beargarden-sk8` hosts sk8):
 
-    tools/make_skaters.sh                                    # once: the skaters
-    cd ~/src/eg/lens.worktrees/lens-sk8
-    LENS_REALM=$HOME/src/eg/beargarden/world cargo build --release -p lens-app --features lens-app/sk8
-    # run it from a folder whose conditioned/ holds the lens's conditioned/* and
-    # conditioned/beargarden -> beargarden/conditioned/beargarden
-    LENS_LOOK=folder LENS_ADDR=127.0.0.1:4061 LENS_WEB=127.0.0.1:4062 <target>/release/lens-app
+    tools/make_skaters.sh          # once: the skaters' bodies
+    tools/play.sh                  # starts the world, builds the lens if needed, plays
 
-The start menu is Beargarden's (`hud/menu.json`, `scenes/menu-beargarden.json`).
-SKATERS picks a skater. On a board:
+`tools/play.sh` starts the world unless one already listens on 4061, builds the lens with
+sk8 the first time (`REBUILD=1` builds again), makes the folder it runs from
+(`~/.beargarden/lens-run`), and stops the world it started when the lens quits. Its header
+says where it looks for the engine and the lens and how to point it elsewhere.
+`LENS_HUD_LIVE=1 tools/play.sh` shows edits to `world/hud/*.json` within a second.
+
+In the game: CONTINUE or NEW GAME, then STEP ON SKATEBOARD. The spots are a ride away:
+say `plattan`, `ralis`, `fryshuset`, `ovningsplanen` or `bjorns` (Björns trädgård's bowls).
+MENU (the cog) has Arcade / realistic, Regular / goofy and Difficulty; START A TWO-MINUTE
+SESSION puts you on a board and starts the clock. On a board:
 - W or Space pushes, S brakes, A and D lean.
-- The arrows are the right stick: down then up is an ollie.
+- The arrows are the right stick: down then up is an ollie, curved for flips.
 - H holds a manual, S with A or D powerslides, Z and G grab.
 - T brings the board back after a run-out, and F steps off.
-- On glass: the PUSH, FOOT BRAKE and OLLIE buttons, and the right thumb flicks.
+- On glass: PUSH, FOOT BRAKE and OLLIE; the right thumb flicks; OLLIE again in the air grabs.
 - A pad works as in the spec.
 - `LENS_SK8_TIMESCALE=0.25` slows the board down to look at a trick.
-- The world also takes `skater <name>`, `stance goofy` and a spot's name.
+- The world also takes `skater <name>`, `style realistic`, `stance goofy` and a spot's name.
 
-The apps:
+The ride is recorded: `sk8.jsonl` in the session's diagnostics (on a phone or simulator, the
+app's Documents/Diagnostics/<session>/), or where `LENS_SK8_LOG` points on a desk: every event,
+change of state and a sample twice a second with the ground under the rider.
+
+On the iPhone simulator (the lens's iOS app with this realm and its own world inside):
+
+    cd ~/src/eg/lens.worktrees/lens-sk8/ios
+    ENGINE=<engine checkout> SODER_WORLD=~/src/eg/beargarden/world ./build-driver.sh release   # once, and after a chart changes: ./build-driver.sh slices
+    xcodegen
+    SODER_WORLD=~/src/eg/beargarden/world LENS_FEATURES=lens-app/sk8 xcodebuild -project Soder.xcodeproj \
+      -scheme Soder -destination 'id=<simulator id>' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+    xcrun simctl install <simulator id> build/Build/Products/Debug-iphonesimulator/Soder.app
+    SIMCTL_CHILD_SODER_TEST_PORT=15441 xcrun simctl launch <simulator id> com.eldergrounds.soder
+
+Use a simulator of its own: the app is still named Söder and has Söder's bundle id. The test
+port keeps its world off 4041, where a Söder world may run. The mouse is your finger.
+
+The native apps (SwiftUI around sk8, apart from the lens):
 
     cd apple && xcodegen generate && open Beargarden.xcodeproj
 
