@@ -127,3 +127,22 @@ fn a_spin_left_short_is_finished_in_arcade_and_bails_realistic() {
     assert!(spin_part("arcade", 12).is_some(), "arcade rides away");
     assert_eq!(spin_part("realistic", 12), None);
 }
+
+/// A thumb's flick on glass, about 0.15 s: down, through the middle, up.
+fn thumb_flick(style: &str) -> f32 {
+    let mut s = styled(flat(), style);
+    start(&mut s, ZERO, 0.0, 3.0);
+    run(&mut s, 10, VirtualController::default());
+    let mut ev = run(&mut s, 4, rs(-1.0));
+    ev.extend(run(&mut s, 2, rs(0.0)));
+    ev.extend(run(&mut s, 3, rs(1.0)));
+    ev.extend(run(&mut s, 1, VirtualController::default()));
+    ev.iter().find_map(|e| if let Event::Pop { strength, .. } = e { Some(*strength) } else { None }).unwrap_or(0.0)
+}
+
+#[test]
+fn a_thumbs_flick_is_a_full_ollie_in_arcade() {
+    let (a, r) = (thumb_flick("arcade"), thumb_flick("realistic"));
+    assert!(a > 0.95, "arcade strength {a}");
+    assert!(r < a, "realistic strength {r}, arcade {a}");
+}

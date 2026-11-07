@@ -27,6 +27,10 @@ grind_ledge_stall = 1.0
 # A section may name a difficulty too ([arcade hardcore]); every word must hold.
 
 [arcade]
+# A thumb's flick on glass takes about 0.15 s, three samples a point: full strength in arcade
+# (the spec's 1.75 to 4.4 gave it half an ollie, iPhone simulator 2026-11-07).
+flick_low = 3.0
+flick_high = 6.5
 rolling_friction_base = 0.12
 rolling_friction_per_speed = 0.02
 max_pushable_speed = 9.5

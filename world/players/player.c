@@ -8,6 +8,7 @@
 inherit "support/skate_rules";
 
 void login() {
+    float *start;
     if (query_attr(this_player(), "skate_known") == 0) {
         set_attr(this_player(), "skate_known", 1);
         set_attr(this_player(), "skate_stance", "regular");
@@ -36,6 +37,12 @@ void login() {
                     "skate_session_left", "skate_result", "skate_record", "skate_best", "skate_spot",
                     "skate_landing", "riding", "skate_board" }))
         show_attr(a);
+    // Every visit starts at the spot's start, facing its first line: a new player arrived
+    // where the room's middle is, which at Plattan faced the buildings.
+    if (member(skate_spots(), query_room(this_player())) >= 0) {
+        start = skate_start(query_room(this_player()));
+        transport(this_player(), query_room(this_player()), start[0], start[1]);
+    }
     set_hud(this_player(), "hud/skate.json");
     set_heart_beat(1);
 }

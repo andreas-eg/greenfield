@@ -50,3 +50,23 @@ Still open from this session:
   drops in at 4 m/s, down to the floor and up the far wall without a bail.
 - **A style changed mid-ride** first rebuilt the ride where the camera was, on a bowl's wall,
   and stood the rider sideways on it. Now it retunes the same ride where it is.
+
+## 2026-11-07, evening: the iPhone simulator
+
+The lens built for iOS (iPhone 17 simulator, iOS 26.5) with Beargarden's realm and its own
+driver in the app, played by script through the phone's controls.
+
+| Tried | What happened | Done |
+|---|---|---|
+| Start | The driver put every new player in Söder's gotgatan, which Beargarden has not: never connected | `driver.m` starts in the realm's `start_room` |
+| A new player | Arrived in the room's middle, facing the buildings at Plattan, and rode into the corner | Every visit starts at the spot's start (`player.c` login) |
+| The HUD | The keyboard hint showed on the phone | Keys on a desk only (`lens_glass`); on glass a thumb hint |
+| PUSH, FOOT BRAKE, OLLIE | Work | - |
+| Right-thumb flick (0.15 s) | An ollie at half strength, 0.66 m: a thumb is slower than a stick | Arcade's flick window widened (3.0 to 6.5): full strength, 1.04 m; test added |
+| Grab | No triggers on a phone: no grabs at all | OLLIE pressed again in the air grabs: a Mute, clean |
+
+Still open on the phone:
+- Lining up a bench is fiddly: the board ran 0.7 m beside the bench's line. A real thumb has to say whether that is the steering or the script.
+- The Dynamic Island covers the left edge of the menu rows (CHOOSE HUGO) in landscape.
+- The app is still called Söder, with Söder's icon and bundle id: a Beargarden target before TestFlight.
+- Its own meshes (skaters, spots) are packed from local folders; for TestFlight they go into Studio and the realm's lock.

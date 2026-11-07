@@ -91,3 +91,8 @@ might do instead. Found while building and playing the skate game (lens branch
 17. **In the background, the window shows the intro.** With another app in front, the lens
     draws "Elder Grounds presents" over the game while the game runs on behind it. Seen while
     two lenses played side by side.
+18. **The iOS app is Söder's.** The driver's start room was fixed in `driver.m` (now the
+    realm's), the asset packing insisted on Söder's band, and the app's name, icon and bundle id
+    are Söder's. A generic iOS shell would take all of these from the realm.
+19. **The menus ignore the safe area in landscape.** On an iPhone 17 the Dynamic Island
+    covers the left end of the body chooser's rows.
