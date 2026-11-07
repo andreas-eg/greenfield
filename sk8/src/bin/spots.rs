@@ -312,6 +312,75 @@ fn glb(g: &Geo, png: Vec<u8>, name: &str, tile: Option<f32>) -> Vec<u8> {
     out
 }
 
+/// The walkable ground as the walkmask's decks: every surface but an unrideable one that
+/// faces up more than it faces sideways, one deck a triangle, its plane through its corners,
+/// and none buried under another. Off the board a body walks on these, so stairs, ledges,
+/// the upper level and bowls hold it where sk8's surfaces are. With a flat floor at 0, or the
+/// plaza's ground left in under the stairs, a body put down off the board stood in the stairs
+/// or inside the upper level (iPhone simulator, 2026-11-07).
+fn decks(f: &sk8::world::SpotFile) -> Vec<serde_json::Value> {
+    // (corners in x, z; height at the first; slope in x and z)
+    let mut tris: Vec<([[f32; 2]; 3], f32, [f32; 2])> = Vec::new();
+    for m in f.meshes.iter().filter(|m| m.surface != sk8::world::Surface::Unrideable) {
+        for t in &m.triangles {
+            let [a, b, c] = t.map(|i| m.vertices[i as usize]);
+            let (u, v) = ([b[0] - a[0], b[1] - a[1], b[2] - a[2]], [c[0] - a[0], c[1] - a[1], c[2] - a[2]]);
+            let n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+            let len = (n[0] * n[0] + n[1] * n[1] + n[2] * n[2]).sqrt();
+            if len < 1e-6 || (n[1] / len).abs() < 0.3 {
+                continue;
+            }
+            tris.push(([[a[0], a[2]], [b[0], b[2]], [c[0], c[2]]], a[1], [-n[0] / n[1], -n[2] / n[1]]));
+        }
+    }
+    let height = |t: &([[f32; 2]; 3], f32, [f32; 2]), x: f32, z: f32| t.1 + t.2[0] * (x - t.0[0][0]) + t.2[1] * (z - t.0[0][1]);
+    let inside = |t: &[[f32; 2]; 3], x: f32, z: f32| {
+        let s = |p: [f32; 2], q: [f32; 2]| (q[0] - p[0]) * (z - p[1]) - (q[1] - p[1]) * (x - p[0]);
+        let (d1, d2, d3) = (s(t[0], t[1]), s(t[1], t[2]), s(t[2], t[0]));
+        !((d1 < -1e-4 || d2 < -1e-4 || d3 < -1e-4) && (d1 > 1e-4 || d2 > 1e-4 || d3 > 1e-4))
+    };
+    let bbox = |t: &[[f32; 2]; 3]| {
+        let xs = t.map(|p| p[0]);
+        let zs = t.map(|p| p[1]);
+        [xs.iter().cloned().fold(f32::MAX, f32::min), zs.iter().cloned().fold(f32::MAX, f32::min), xs.iter().cloned().fold(f32::MIN, f32::max), zs.iter().cloned().fold(f32::MIN, f32::max)]
+    };
+    let boxes: Vec<[f32; 4]> = tris.iter().map(|t| bbox(&t.0)).collect();
+    // A triangle is buried when any of its corners (pulled a little in) or its middle has
+    // another surface over it by more than a step.
+    let buried = |i: usize| {
+        let t = &tris[i];
+        let (cx, cz) = ((t.0[0][0] + t.0[1][0] + t.0[2][0]) / 3.0, (t.0[0][1] + t.0[1][1] + t.0[2][1]) / 3.0);
+        let mut probes = vec![(cx, cz)];
+        for p in t.0 {
+            probes.push((p[0] + (cx - p[0]) * 0.1, p[1] + (cz - p[1]) * 0.1));
+        }
+        probes.iter().all(|&(x, z)| {
+            let mine = height(t, x, z);
+            tris.iter().enumerate().any(|(j, o)| {
+                let b = boxes[j];
+                j != i && x >= b[0] && x <= b[2] && z >= b[1] && z <= b[3] && inside(&o.0, x, z) && height(o, x, z) > mine + 0.3
+            })
+        })
+    };
+    let r = |x: f32| (x * 1000.0).round() / 1000.0;
+    let mut kept: Vec<usize> = (0..tris.len()).filter(|&i| !buried(i)).collect();
+    // Highest first: a body put down with no level of its own takes the first deck under it.
+    kept.sort_by(|&a, &b| {
+        let top = |i: usize| tris[i].0.iter().map(|p| height(&tris[i], p[0], p[1])).fold(f32::MIN, f32::max);
+        top(b).total_cmp(&top(a))
+    });
+    kept.into_iter()
+        .map(|i| {
+            let t = &tris[i];
+            serde_json::json!({
+                "corners": [[r(t.0[0][0]), r(t.0[0][1])], [r(t.0[1][0]), r(t.0[1][1])], [r(t.0[2][0]), r(t.0[2][1])]],
+                "y": r(t.1),
+                "slope": [r(t.2[0]), r(t.2[1])],
+            })
+        })
+        .collect()
+}
+
 fn main() {
     let dir = std::env::args().nth(1).unwrap_or_else(|| "../world/charts".into());
     let meshes = std::env::args().nth(2).unwrap_or_else(|| "../conditioned/beargarden".into());
@@ -340,7 +409,8 @@ fn main() {
                 "floor_y": 0.0,
                 "eye_height": 1.65,
                 "body_radius": 0.35,
-                "blocked": []
+                "blocked": [],
+                "decks": decks(&f)
             }
         });
         let path = format!("{}/{}.json", dir, f.name);

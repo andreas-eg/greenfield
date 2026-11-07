@@ -70,3 +70,21 @@ Still open on the phone:
 - The Dynamic Island covers the left edge of the menu rows (CHOOSE HUGO) in landscape.
 - The app is still called Söder, with Söder's icon and bundle id: a Beargarden target before TestFlight.
 - Its own meshes (skaters, spots) are packed from local folders; for TestFlight they go into Studio and the realm's lock.
+
+## 2026-11-07, evening: Andreas on the simulator
+
+- **START A TWO-MINUTE SESSION did nothing.** On foot, the world answered "Step on a board
+  first." and the phone shows no world lines. The session now puts the skater on a board
+  first. The two minutes run their full time (heard at 8.8 s and 130.3 s).
+- **Sunk into the stairs, and through the world after a fall.** The spots' walkmasks were a
+  flat floor at 0, so a body off the board stood at 0 inside the stairs or the upper level.
+  The spot builder now writes the surfaces as walkmask decks, leaves out any surface with
+  another over it, and puts the highest first. Measured: the stairs 1.8 / 0.8 / 0.2 m, the
+  upper level 2.4, the benches 0.42, the kerb 0.18.
+- **Instrumentation.** The lens writes the ride to `sk8.jsonl` in the session's Diagnostics
+  folder: every sk8 event, every change of state, on and off the board, and a sample twice a
+  second with the ground under the rider. Under the spot's lowest floor it writes
+  `fell_through`, also to events.jsonl (and Firebase on a device), and puts the rider back at
+  the start.
+
+Still open: world lines (the reply to a tap) do not show on the phone.

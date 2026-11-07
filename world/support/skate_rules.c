@@ -144,7 +144,7 @@ int skate_session_beats() { return 60; }   // 60 world ticks of 2 s: two minutes
 string skate_session_start(object who) {
     string spot;
     spot = query_attr(who, "skate_spot");
-    if (!spot) return "Sessions are skated at a spot: Plattan, Rålis, Fryshuset or Övningsplanen.";
+    if (!spot) return "Sessions are skated at a spot: Plattan, Rålis, Fryshuset, Övningsplanen or Björns trädgård.";
     if (query_attr(who, "skate_session") == 1 || query_attr(who, "skate_session") == 2) return "A session is running. Skate it out.";
     if (query_attr(who, "riding") != "skateboard") return "Step on a board first.";
     skate_line_end(who);

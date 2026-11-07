@@ -193,6 +193,9 @@ int command(string verb, string args) {
         return 1;
     }
     if (verb == "session") {
+        // Started on foot (the post's offer is there to anyone near it): onto a board first.
+        // The board's own hook says riding a moment later; the session needs it now.
+        if (query_attr(this_player(), "riding") != "skateboard" && board_here()) set_attr(this_player(), "riding", "skateboard");
         write(skate_session_start(this_player()));
         return 1;
     }
