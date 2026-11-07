@@ -80,3 +80,11 @@ might do instead. Found while building and playing the skate game (lens branch
     the user at the same Mac, their typing went into a live-played game. Patched for
     `LENS_PLAY_LIVE`: desk keys and mouse are ignored (a script's fingers come in as touches),
     and the launcher hands focus back. A test mode should never read a person's input.
+15. **Other riders on a client-run simulation were drawn as Söder's seated riders.** A
+    skateboard has no seat, so another player on a sk8 board stood beside it and vanished when
+    riding. Patched: a rider on `sth_skateboard` in a `skate_*` clip stands on the deck (and
+    turned round when their shown `skate_stance` is goofy), and their board turns through the
+    flips their realm shows (`skate_board`). A generic lens wants a way for a game to say how
+    its riders and their mounts are posed for everyone, not only for the one riding.
+16. **The intro credits a game.** "A GAME BY STHLM ROYALTY AND ELDER GROUNDS" plays before
+    Beargarden sk8r's menu too: the credits should be the realm's.

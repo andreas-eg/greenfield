@@ -28,7 +28,7 @@ void login() {
     foreach (string a : ({ "skate_stance", "skate_difficulty", "skate_score", "skate_line", "skate_mult",
                     "skate_trick", "skate_flash", "skate_bail", "skate_session", "skate_session_score",
                     "skate_session_left", "skate_result", "skate_record", "skate_best", "skate_spot",
-                    "skate_landing", "riding" }))
+                    "skate_landing", "riding", "skate_board" }))
         show_attr(a);
     set_hud(this_player(), "hud/skate.json");
     set_heart_beat(1);
@@ -89,6 +89,16 @@ int command(string verb, string args) {
         if (sscanf(args, "clip %s", what) == 1) {
             if (query_attr(this_player(), "riding") == "skateboard" && (sscanf(what, "skate_%s", room) == 1 || what == "walk"))
                 play_clip(this_player(), what, 3.0);
+            return 1;
+        }
+        // The board's flip, from the lens that rides sk8 ("<turns>_<shuvit deg>_<seconds>"):
+        // shown on the rider with a count in front, so the same flip twice is still news,
+        // and every other lens turns this rider's board through it.
+        if (sscanf(args, "board %s", what) == 1) {
+            if (query_attr(this_player(), "riding") == "skateboard") {
+                add_attr(this_player(), "skate_board_n", 1);
+                set_attr(this_player(), "skate_board", query_attr(this_player(), "skate_board_n") + " " + what);
+            }
             return 1;
         }
         if (sscanf(args, "land %s", what) == 1) {
