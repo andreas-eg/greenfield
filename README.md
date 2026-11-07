@@ -105,3 +105,10 @@ The simulation's tests:
 
 Written in LPC for mull; the efun reference is `/efuns` on a running world
 (`priv/efuns.md` in the engine). Tracked in Studio as the GREENFIELD project.
+
+## The HUD's look
+
+`world/hud/skate.json` carries Beargarden's `theme`: its colours (dark ink, park green, warm
+yellow), round controls without a slant, 10 % larger. The tokens and the rules are the lens's
+(`lens/docs/hud-theme.md`). To edit it live, run the desktop lens with `LENS_HUD_LIVE=1` against
+the local world: a change to the JSON shows within a second.

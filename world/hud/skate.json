@@ -28,5 +28,9 @@
     {"id": "best", "type": "text", "place": "centre_low", "text": "BEST HERE {skate_best}",
      "when": [{"attr": "skate_session", "eq": 3}, {"attr": "skate_record", "eq": 0}]}
   ],
-  "touch": {"phone": {"round": true}, "tablet": {"round": true}}
+  "theme": {
+    "colors": {"ink": "#111418", "primary": "#2bb673", "highlight": "#ffe14d", "text": "#ffffff"},
+    "fonts": {"display": "russo-one", "small": "chakra-petch"},
+    "controls": {"shape": "round", "skew": 0, "shadow": true, "scale": 1.1}
+  }
 }
