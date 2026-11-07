@@ -1,0 +1,49 @@
+{
+  "_comment": "Written by beargarden/sk8 (cargo run --bin spots): Björns trädgård, a skate spot. The lens draws spot_bjorns.glb (the same surfaces, coloured by kind) and rides bjorns.skate.json with sk8 (GF-REQ-LENS-1). Do not edit.",
+  "assets": "conditioned/beargarden",
+  "atmosphere": {
+    "color": [
+      0.72,
+      0.8,
+      0.88,
+      1.0
+    ],
+    "end": 320.0,
+    "start": 80.0
+  },
+  "instances": [
+    {
+      "mesh": "spot_bjorns_floor",
+      "pos": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rot_y": 0.0,
+      "scale": 1.0
+    },
+    {
+      "mesh": "spot_bjorns",
+      "pos": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rot_y": 0.0,
+      "scale": 1.0
+    }
+  ],
+  "skate": "bjorns.skate.json",
+  "walkmask": {
+    "blocked": [],
+    "body_radius": 0.35,
+    "extent": [
+      -29.649999618530273,
+      -29.649999618530273,
+      29.649999618530273,
+      29.649999618530273
+    ],
+    "eye_height": 1.65,
+    "floor_y": 0.0
+  }
+}

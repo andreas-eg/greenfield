@@ -89,3 +89,30 @@ fn plattan_first_line_lands_off_the_bench() {
     assert!(said.iter().any(|e| e.contains("GrindStart")), "{said:?}");
     assert_eq!(s.p.state, sk8::sim::State::Ground, "at {:?} vel {:?}: {said:?}", s.p.pos, s.p.vel);
 }
+
+/// Björns trädgård's big bowl as a player first meets it: roll off the start into it at a
+/// walking push's speed, across the floor and up the far wall, and back, never bailing.
+#[test]
+fn bjorns_big_bowl_drops_in_and_rides_across() {
+    let spot = sk8::spots::all().into_iter().find(|s| s.name == "bjorns").unwrap();
+    let mut s = Sim::new(World::from_spot(&spot), Difficulty::Normal);
+    s.t.apply_text_styled(&std::fs::read_to_string("../world/skate/tuning.txt").unwrap(), "arcade");
+    s.place(s.world.spawn, v3(0.0, 0.0, -1.0));
+    s.p.grace = 0.0;
+    s.p.vel = v3(0.0, 0.0, -4.0);
+    s.p.speed_target = 4.0;
+    let (mut low, mut north, mut bails) = (0.0f32, 0.0f32, Vec::new());
+    for _ in 0..60 * 4 {
+        s.step(&[VirtualController::default()]);
+        for e in s.take_events() {
+            if let Event::Bail { reason } = e {
+                bails.push(reason);
+            }
+        }
+        low = low.min(s.p.pos.y);
+        north = north.min(s.p.pos.z);
+    }
+    assert!(bails.is_empty(), "bailed: {bails:?}");
+    assert!(low < -1.2, "down to {low} m, the floor is 1.35 m down");
+    assert!(north < -4.0, "got as far north as z = {north}");
+}

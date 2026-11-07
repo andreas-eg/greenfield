@@ -16,6 +16,7 @@ pub mod frame;
 pub mod grind;
 pub mod input;
 pub mod math;
+pub mod poly;
 pub mod scoring;
 pub mod sim;
 pub mod spots;

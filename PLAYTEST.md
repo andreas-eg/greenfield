@@ -43,3 +43,10 @@ Still open from this session:
 - **Other players see the board.** A second lens watched a kickflip: the rider stood on the
   deck in the skate pose and the board turned over under them. Before, other players saw the
   rider stood beside nothing.
+- **Björns trädgård.** The three bowls from STHLM Royalty's park model (`BT_Skate_Basins_01`
+  v005: rims from the 2023 orthophoto, ±1 m; depths from photos, ±0.4 m) in one deck in the
+  grass. Ridden in the lens: rolling off the start at 2.8 m/s the board caught the coping for
+  a tail stall and dropped in, landed clean on the floor and rode across. `tests/spots.rs`
+  drops in at 4 m/s, down to the floor and up the far wall without a bail.
+- **A style changed mid-ride** first rebuilt the ride where the camera was, on a bowl's wall,
+  and stood the rider sideways on it. Now it retunes the same ride where it is.

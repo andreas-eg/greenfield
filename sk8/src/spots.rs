@@ -143,6 +143,41 @@ pub fn fryshuset() -> SpotFile {
     b.finish("fryshuset", "Fryshuset", v3(-6.0, 0.0, 0.0), 0.0)
 }
 
+/// Björns trädgård: the three concrete bowls in the park on Södermalm (STHLM Royalty's park
+/// model, asset BT_Skate_Basins_01 v005): a big lobed bowl 1.35 m deep and two ovals, 1.10
+/// and 1.25 m, sunk into one deck, apart with no hips between. Rims traced from the 2023
+/// orthophoto (±1 m), depths estimated from photos (±0.4 m), each wall a quarter circle of its
+/// depth's radius, vertical at the lip, as the model has them. The model's metres east and
+/// north are x and -z here, its origin the deck's middle, the deck at y = 0.
+pub fn bjorns() -> SpotFile {
+    let mut b = Builder::new();
+    let s = Surface::Smooth;
+    let here = |pts: &[(f32, f32)]| -> Vec<(f32, f32)> { pts.iter().map(|&(e, n)| (e, -n)).collect() };
+    let large = here(&[(-10.66, 3.61), (-10.20, 5.21), (-8.26, 6.47), (-6.09, 7.84), (-3.35, 8.86), (-0.95, 8.17), (0.42, 6.68), (1.10, 4.63), (0.64, 3.60), (1.90, 2.68), (3.15, 1.19), (3.26, -0.41), (1.89, -2.24), (-0.17, -3.49), (-2.45, -3.38), (-4.27, -2.23), (-4.61, -0.63), (-6.67, -1.31), (-8.50, -1.20), (-9.98, -0.17), (-10.78, 1.67)]);
+    let north_east = here(&[(2.59, 9.08), (2.70, 10.57), (4.19, 11.71), (6.70, 12.17), (9.10, 11.82), (10.47, 10.56), (10.92, 8.85), (10.01, 7.13), (8.06, 5.76), (5.89, 5.19), (3.95, 5.77), (3.04, 7.03)]);
+    let south_east = here(&[(4.29, 1.31), (4.98, 3.02), (6.92, 4.05), (9.55, 4.39), (11.72, 3.58), (12.97, 1.87), (13.31, -0.53), (12.39, -2.93), (10.45, -4.30), (7.82, -4.53), (5.77, -3.27), (4.63, -1.32)]);
+    let deck = here(&[(-12.13, -10.30), (-16.38, 8.06), (12.37, 14.89), (16.66, -3.35), (4.44, -6.50), (-0.51, -7.31)]);
+    let mut rims = Vec::new();
+    for (ctrl, depth) in [(&large, 1.35), (&north_east, 1.10), (&south_east, 1.25)] {
+        let rim = crate::poly::catmull_rom_closed(ctrl, 8);
+        b.freeform_bowl(s, &rim, 0.0, depth, 10);
+        rims.push(rim);
+    }
+    b.polygon(s, &deck, &rims, 0.0);
+    // The park round the deck: grass to a fence 30 m out each way.
+    let out = 30.0;
+    b.polygon(Surface::Slow, &[(-out, -out), (out, -out), (out, out), (-out, out)], &[deck.clone()], 0.0);
+    let (w, h, l) = (0.3, 1.4, 2.0 * out);
+    for (x, z, bw, bd) in [(0.0, -out, l, w), (0.0, out, l, w), (-out, 0.0, w, l), (out, 0.0, w, l)] {
+        b.block(Surface::Unrideable, x, z, 0.0, bw, bd, h, 0.0);
+    }
+    // The start is the deck south of the big bowl, facing north into it: push, and drop in.
+    let start = v3(-1.5, 0.0, 5.4);
+    b.mark("start", start, std::f32::consts::PI);
+    b.mark("ovals", v3(14.8, 0.0, 0.0), -std::f32::consts::FRAC_PI_2);
+    b.finish("bjorns", "Björns trädgård", start, std::f32::consts::PI)
+}
+
 /// Grass from a hw x hd rectangle round the middle out to `out` metres each way, and a
 /// park's fence round it: a spot has no edge to ride off (tests/spots.rs).
 fn grass_round(b: &mut Builder, hw: f32, hd: f32, out: f32) {
@@ -158,5 +193,5 @@ fn grass_round(b: &mut Builder, hw: f32, hd: f32, out: f32) {
 }
 
 pub fn all() -> Vec<SpotFile> {
-    vec![ovningsplanen(), plattan(), ralis(), fryshuset()]
+    vec![ovningsplanen(), plattan(), ralis(), fryshuset(), bjorns()]
 }

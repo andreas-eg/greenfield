@@ -3,6 +3,7 @@
 //! polylines (spec B.2.1, B.3). The spots in `spots.rs` are made with it.
 
 use crate::math::*;
+use crate::poly::{self, P2};
 use crate::world::*;
 
 #[derive(Default)]
@@ -259,6 +260,45 @@ impl Builder {
         let pts: Vec<Vec3> = (0..segs).map(|i| v3(x, y0, z) + dir(i) * (rim - 0.04)).collect();
         self.rail(RailKind::Coping, RailMaterial::Metal, &pts, true);
         (x - half, z - half, x + half, z + half)
+    }
+
+    /// Flat ground at height `y` over `outer` (x, z points round its edge) less `holes`.
+    pub fn polygon(&mut self, s: Surface, outer: &[P2], holes: &[Vec<P2>], y: f32) {
+        for t in poly::triangulate(outer, holes) {
+            let p = |q: P2| v3(q.0, y, q.1);
+            self.tri(s, p(t[0]), p(t[1]), p(t[2]), UP);
+        }
+    }
+
+    /// A sunken bowl of any shape: its rim the closed curve `rim` (x, z) at the deck's height
+    /// `y0`; its wall a quarter circle of radius `depth`, vertical at the lip and flat at the
+    /// bottom, `depth` down, in `rings` steps; a flat floor; metal coping along the rim. The
+    /// deck round it is the caller's (`polygon` with the rim as a hole). Returns the floor's
+    /// edge, for a check that the wall did not fold over itself.
+    pub fn freeform_bowl(&mut self, s: Surface, rim: &[P2], y0: f32, depth: f32, rings: usize) -> Vec<P2> {
+        let n = rim.len();
+        let inward = poly::inward_normals(rim);
+        let ring = |k: usize| -> (Vec<P2>, f32) {
+            let th = k as f32 / rings as f32 * std::f32::consts::FRAC_PI_2;
+            let d = depth * (1.0 - th.cos());
+            let pts = (0..n).map(|i| (rim[i].0 + inward[i].0 * d, rim[i].1 + inward[i].1 * d)).collect();
+            (pts, y0 - depth * th.sin())
+        };
+        for k in 0..rings {
+            let ((a, ya), (b, yb)) = (ring(k), ring(k + 1));
+            let mid = (k as f32 + 0.5) / rings as f32 * std::f32::consts::FRAC_PI_2;
+            for i in 0..n {
+                let j = (i + 1) % n;
+                let nm = v3(inward[i].0 + inward[j].0, 0.0, inward[i].1 + inward[j].1).norm_or(UP);
+                let out = (nm * mid.cos() + UP * mid.sin()).norm_or(UP);
+                self.quad(s, v3(a[i].0, ya, a[i].1), v3(a[j].0, ya, a[j].1), v3(b[j].0, yb, b[j].1), v3(b[i].0, yb, b[i].1), out);
+            }
+        }
+        let (floor, yf) = ring(rings);
+        self.polygon(s, &floor, &[], yf);
+        let coping: Vec<Vec3> = (0..n).map(|i| v3(rim[i].0 + inward[i].0 * 0.04, y0, rim[i].1 + inward[i].1 * 0.04)).collect();
+        self.rail(RailKind::Coping, RailMaterial::Metal, &coping, true);
+        floor
     }
 
     /// A flight of `n` steps down from y0, going along `yaw`, each `rise` by `tread`, w wide,

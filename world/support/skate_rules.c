@@ -16,12 +16,13 @@
 //   skate grind <name>                                      a grind started (for the HUD)
 
 // The rooms that are skate spots (spots/*.c), by room name.
-string *skate_spots() { return ({ "ovningsplanen", "plattan", "ralis", "fryshuset" }); }
+string *skate_spots() { return ({ "ovningsplanen", "plattan", "ralis", "fryshuset", "bjorns" }); }
 
 // Where a skater arrives at each spot: its start mark (sk8/src/spots.rs), x then z.
 float *skate_start(string spot) {
     if (spot == "plattan") return ({ 7.6, 13.0 });
     if (spot == "fryshuset") return ({ -6.0, 0.0 });
+    if (spot == "bjorns") return ({ -1.5, 5.4 });
     return ({ 0.0, 0.0 });
 }
 

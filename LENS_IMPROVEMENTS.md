@@ -88,3 +88,6 @@ might do instead. Found while building and playing the skate game (lens branch
     its riders and their mounts are posed for everyone, not only for the one riding.
 16. **The intro credits a game.** "A GAME BY STHLM ROYALTY AND ELDER GROUNDS" plays before
     Beargarden sk8r's menu too: the credits should be the realm's.
+17. **In the background, the window shows the intro.** With another app in front, the lens
+    draws "Elder Grounds presents" over the game while the game runs on behind it. Seen while
+    two lenses played side by side.
