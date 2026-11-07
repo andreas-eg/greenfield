@@ -1,0 +1,17 @@
+[package]
+name = "sk8"
+version = "0.1.0"
+edition = "2021"
+description = "Greenfield's skate simulation: the sk8r specification (sk8t/skateboard.md) as a fixed-step, platform-free library the lens hosts on iOS, macOS and the web."
+publish = false
+
+[lib]
+crate-type = ["rlib", "staticlib", "cdylib"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+opt-level = 3
+lto = true

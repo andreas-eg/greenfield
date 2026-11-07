@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "title": "GREENFIELD",
+  "items": [
+    {"id": "continue", "label": "Continue", "do": "continue"},
+    {"id": "new_game", "label": "New game", "do": "new_game"},
+    {"id": "characters", "label": "Skaters", "do": "characters"},
+    {"id": "quit", "label": "Quit", "do": "quit", "on": ["desk"]}
+  ],
+  "hint": {"desk": "UP DOWN CHOOSE   ENTER", "touch": "TAP ONE"},
+  "in_game": {
+    "items": [
+      {"id": "continue", "label": "Continue", "do": "continue"},
+      {"id": "exit", "label": "Exit to main menu", "do": "exit"},
+      {"id": "settings", "label": "Settings", "do": "settings"},
+      {"id": "hud", "label": "Hud", "do": "hud"},
+      {"id": "stuck", "label": "I'm stuck", "do": "stuck"}
+    ]
+  }
+}

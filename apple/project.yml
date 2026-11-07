@@ -1,0 +1,71 @@
+# Greenfield for iOS and macOS, native: SwiftUI and SceneKit around the sk8 simulation, which is
+# linked in as a static library built for the platform being built (build-sk8.sh, pre-build).
+#   xcodegen generate, then the Greenfield-iOS or Greenfield-macOS scheme.
+name: Greenfield
+options:
+  bundleIdPrefix: com.eldergrounds
+  deploymentTarget:
+    iOS: "17.0"
+    macOS: "14.0"
+settings:
+  base:
+    DEVELOPMENT_TEAM: J555X7Q9RQ
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: "0.2"
+    CURRENT_PROJECT_VERSION: "2"
+    SWIFT_VERSION: "5.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    SWIFT_OBJC_BRIDGING_HEADER: Sources/Bridging.h
+    LIBRARY_SEARCH_PATHS: $(SRCROOT)/build/lib/$(PLATFORM_NAME)
+    OTHER_LDFLAGS: -lsk8
+    ARCHS: arm64
+    ONLY_ACTIVE_ARCH: YES
+targetTemplates:
+  Game:
+    type: application
+    sources:
+      - path: Sources
+    preBuildScripts:
+      - name: Build sk8 for this platform
+        script: '"$SRCROOT/build-sk8.sh"'
+        basedOnDependencyAnalysis: false
+    postCompileScripts:
+      - name: Bundle the spots
+        script: |
+          dest="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/spots"
+          mkdir -p "$dest"
+          cp "$SRCROOT"/../world/charts/*.skate.json "$dest/"
+        basedOnDependencyAnalysis: false
+targets:
+  Greenfield-iOS:
+    templates: [Game]
+    platform: iOS
+    info:
+      path: Info-iOS.plist
+      properties:
+        CFBundleDisplayName: Greenfield
+        UILaunchScreen: {}
+        UIRequiresFullScreen: true
+        UIStatusBarHidden: true
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        GCSupportsControllerUserInteraction: true
+        GCSupportedGameControllers: [{ProfileName: ExtendedGamepad}]
+        NSLocalNetworkUsageDescription: Greenfield connects to a Greenfield world on your network.
+        NSAppTransportSecurity: {NSAllowsArbitraryLoads: true, NSAllowsLocalNetworking: true}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.eldergrounds.greenfield
+        TARGETED_DEVICE_FAMILY: "1,2"
+  Greenfield-macOS:
+    templates: [Game]
+    platform: macOS
+    info:
+      path: Info-macOS.plist
+      properties:
+        CFBundleDisplayName: Greenfield
+        LSApplicationCategoryType: public.app-category.sports-games
+        NSAppTransportSecurity: {NSAllowsArbitraryLoads: true, NSAllowsLocalNetworking: true}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.eldergrounds.greenfield.mac

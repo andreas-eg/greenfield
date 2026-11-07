@@ -1,0 +1,18 @@
+# Greenfield's skate tuning, read by sk8 in the lens (the board's drive names this file).
+# Every number in greenfield/sk8/src/tuning.rs can be set here by name: `key = value`,
+# a # The lens's view: a little further back and higher than the spec's 2 m at 12 deg, so
+# the line ahead shows past the rider and the touch controls (player tests 2026-11-07).
+cam_distance_slow = 3.0
+cam_distance_fast = 3.8
+cam_elevation_deg = 17
+cam_look_ahead = 1.5
+cam_fov_deg = 62
+
+[easy] / [normal] / [hardcore] section applies to that difficulty alone.
+# Empty sections mean the spec's defaults (sk8t/skateboard.md C.1, B.15) stand.
+
+[easy]
+
+[normal]
+
+[hardcore]

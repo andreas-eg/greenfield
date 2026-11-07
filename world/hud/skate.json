@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "elements": [
+    {"id": "score", "type": "counter", "place": "top_right", "label": "SCORE", "value": {"attr": "skate_score"}, "change": 2.0},
+    {"id": "line", "type": "text", "place": "top_right", "look": "plate", "text": "LINE {skate_line}",
+     "when": {"attr": "skate_line", "gt": 0}},
+    {"id": "trick1", "type": "text", "place": "centre_low", "look": "plate", "tone": "good", "text": "{skate_trick}",
+     "when": {"attr": "skate_flash", "eq": 1}, "for": 1.8},
+    {"id": "trick2", "type": "text", "place": "centre_low", "look": "plate", "tone": "good", "text": "{skate_trick}",
+     "when": {"attr": "skate_flash", "eq": 2}, "for": 1.8},
+    {"id": "spot", "type": "text", "place": "top_left", "text": "{skate_stance}  {skate_difficulty}",
+     "when": {"attr": "skate_spot", "set": true}},
+    {"id": "keys", "type": "text", "place": "top_left", "text": "W PUSH  S BRAKE  ARROWS DOWN-UP OLLIE  H MANUAL  S+A/D SLIDE  Z G GRAB  F OFF",
+     "when": {"attr": "riding", "set": true}},
+
+    {"id": "session_count", "type": "countdown", "place": "centre", "look": "numeral", "seconds": 2, "then": "SKATE!", "hold": 1.0,
+     "when": {"attr": "skate_session", "eq": 1}},
+    {"id": "session_time", "type": "countdown", "place": "bottom", "look": "numeral", "seconds": 120, "then": "TIME!", "hold": 2,
+     "when": {"attr": "skate_session", "eq": 2}},
+    {"id": "session_score", "type": "text", "place": "top_right", "look": "plate", "text": "SESSION  {skate_session_score}",
+     "when": {"attr": "skate_session", "in": [1, 2]}},
+    {"id": "card", "type": "text", "place": "centre", "look": "numeral", "text": "SESSION  {skate_result}",
+     "when": {"attr": "skate_session", "eq": 3}},
+    {"id": "record", "type": "text", "place": "centre_low", "look": "plate", "tone": "good", "text": "NEW BEST",
+     "when": [{"attr": "skate_session", "eq": 3}, {"attr": "skate_record", "eq": 1}]},
+    {"id": "best", "type": "text", "place": "centre_low", "text": "BEST HERE {skate_best}",
+     "when": [{"attr": "skate_session", "eq": 3}, {"attr": "skate_record", "eq": 0}]}
+  ]
+}

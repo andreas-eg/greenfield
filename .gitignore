@@ -1,1 +1,5 @@
 .DS_Store
+sk8/target/
+play/sk8.wasm
+play/spots/
+world/scenes/skaters/

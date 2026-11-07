@@ -1,0 +1,49 @@
+{
+  "_comment": "Written by greenfield/sk8 (cargo run --bin spots): Fryshuset, a skate spot. The lens draws spot_fryshuset.glb (the same surfaces, coloured by kind) and rides fryshuset.skate.json with sk8 (GF-REQ-LENS-1). Do not edit.",
+  "assets": "conditioned/greenfield",
+  "atmosphere": {
+    "color": [
+      0.72,
+      0.8,
+      0.88,
+      1.0
+    ],
+    "end": 320.0,
+    "start": 80.0
+  },
+  "instances": [
+    {
+      "mesh": "spot_fryshuset_floor",
+      "pos": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rot_y": 0.0,
+      "scale": 1.0
+    },
+    {
+      "mesh": "spot_fryshuset",
+      "pos": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rot_y": 0.0,
+      "scale": 1.0
+    }
+  ],
+  "skate": "fryshuset.skate.json",
+  "walkmask": {
+    "blocked": [],
+    "body_radius": 0.35,
+    "extent": [
+      -20.5,
+      -24.5,
+      20.5,
+      24.5
+    ],
+    "eye_height": 1.65,
+    "floor_y": 0.0
+  }
+}

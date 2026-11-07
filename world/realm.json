@@ -1,4 +1,15 @@
 {
-  "start_room": "field",
-  "library": ["things", "vehicles", "charts", "look"]
+  "start_room": "plattan",
+  "soul": "players/player.c",
+  "library": [
+    "things",
+    "vehicles",
+    "charts",
+    "look",
+    "players",
+    "support",
+    "hud",
+    "skate"
+  ],
+  "menu_scene": "menu-greenfield"
 }

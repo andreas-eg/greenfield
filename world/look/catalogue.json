@@ -1,33 +1,118 @@
 {
-  "_comment": "greenfield's look (SODER-WORLD-S72): the names the world uses and what the lens draws for them, as Söder's catalogue does. The bodies are the band's, shared with Söder.",
+  "_comment": "greenfield's look (SODER-WORLD-S72): the names the world uses and what the lens draws for them, as Söder's catalogue does. The skaters are the band's and three CharGen bodies (Söder's rider-s4 packages) with Greenfield's skate clips, authored in ActionForge and retargeted onto each (tools/make_skaters.sh); the lens plays the clip sk8 names (skate_*) while one rides.",
   "bodies": {
-    "band_mixamo_hugo": {
+    "skater_hugo": {
       "forward": "+z",
       "title": "Hugo",
-      "mesh": "scenes/band-mixamo-20261006/hugo.glb",
-      "clips": "scenes/band-mixamo-20261006/hugo.glb",
-      "idle": "walk_forward",
-      "walk": "walk_forward"
+      "mesh": "scenes/skaters/hugo.glb",
+      "clips": "scenes/skaters/hugo.glb",
+      "idle": "idle",
+      "walk": "walk",
+      "run": "run",
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "shared_clips": false,
+      "clip_aliases": {
+        "talk": "conversation"
+      }
     },
-    "band_mixamo_erik": {
+    "skater_erik": {
       "forward": "+z",
       "title": "Erik",
-      "mesh": "scenes/band-mixamo-20261006/erik.glb",
-      "clips": "scenes/band-mixamo-20261006/erik.glb",
-      "idle": "unarmed_idle",
-      "walk": "walk_forward"
+      "mesh": "scenes/skaters/erik.glb",
+      "clips": "scenes/skaters/erik.glb",
+      "idle": "idle",
+      "walk": "walk",
+      "run": "run",
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "shared_clips": false,
+      "clip_aliases": {
+        "talk": "conversation"
+      }
     },
-    "band_mixamo_zikai": {
+    "skater_zikai": {
       "forward": "+z",
       "title": "Zikai",
-      "mesh": "scenes/band-mixamo-20261006/zikai.glb",
-      "clips": "scenes/band-mixamo-20261006/zikai.glb",
-      "idle": "dance_shuffling",
-      "walk": "walk_forward_in_place"
+      "mesh": "scenes/skaters/zikai.glb",
+      "clips": "scenes/skaters/zikai.glb",
+      "idle": "idle",
+      "walk": "walk",
+      "run": "run",
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "shared_clips": false,
+      "clip_aliases": {
+        "talk": "conversation"
+      }
+    },
+    "skater_npc06": {
+      "forward": "+z",
+      "title": "Sanna",
+      "mesh": "scenes/skaters/npc06.glb",
+      "clips": "scenes/skaters/npc06.glb",
+      "idle": "idle",
+      "walk": "walk",
+      "run": "run",
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "shared_clips": false,
+      "clip_aliases": {
+        "talk": "conversation"
+      }
+    },
+    "skater_npc09": {
+      "forward": "+z",
+      "title": "Mo",
+      "mesh": "scenes/skaters/npc09.glb",
+      "clips": "scenes/skaters/npc09.glb",
+      "idle": "idle",
+      "walk": "walk",
+      "run": "run",
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "shared_clips": false,
+      "clip_aliases": {
+        "talk": "conversation"
+      }
+    },
+    "skater_npc20": {
+      "forward": "+z",
+      "title": "Lova",
+      "mesh": "scenes/skaters/npc20.glb",
+      "clips": "scenes/skaters/npc20.glb",
+      "idle": "idle",
+      "walk": "walk",
+      "run": "run",
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "shared_clips": false,
+      "clip_aliases": {
+        "talk": "conversation"
+      }
     }
   },
   "mounts": {
     "door": "sth_door",
+    "skateboard": "sth_skateboard",
     "walking_castle": "sth_walking_castle"
   }
 }

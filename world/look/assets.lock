@@ -10,6 +10,10 @@
    "sha256": "3210a52899d343c4c7e226de9ac7f945937fe1fcc2afd13c3a641e400b8beb79",
    "size": 8200
   },
+  "kit/urban/sth_skateboard.glb": {
+   "sha256": "115ab48b21e341ad8bdecc46b043514659704eaeb0229e967932a63baa7f5d79",
+   "size": 37540
+  },
   "kit/urban/sth_walking_castle.glb": {
    "sha256": "43145c8c1d1d366bced79204b04b54ce4b6f8b6008723ffff31134601124824b",
    "size": 29984
