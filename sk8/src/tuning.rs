@@ -135,6 +135,9 @@ tuning! {
     grind_max_impact: 7.0, 5.5, 4.5;
     grind_lean_time: 4.0, 2.5, 1.5;
     grind_drag_base: 0.9, 0.9, 0.9;
+    /// Not in the spec as a number to tune: how long a board stopped on a ledge waits before it
+    /// comes off (a rail's is 1 s). The spec's 4 s gives C.3 step 6's lean-off at about 4.5 s.
+    grind_ledge_stall: 4.0, 4.0, 4.0;
     // Scoring (B.14.3)
     line_time: 5.0, 5.0, 5.0;
 }

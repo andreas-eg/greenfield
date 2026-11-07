@@ -508,3 +508,19 @@ fn spots_load_and_spawn_on_the_ground() {
         assert_eq!(s.p.state, State::Ground, "{name} spawn");
     }
 }
+
+/// A ledge ridden slowly to its stall: off it, once, not locked again where it stopped
+/// (player test 2026-11-07: a stalled 50-50 at Plattan re-locked every half second).
+#[test]
+fn a_stalled_grind_comes_off_and_does_not_lock_again() {
+    let mut s = sim(ledge_world(8.0));
+    start(&mut s, v3(-0.4, 0.0, -1.0), 0.0, 2.7);
+    run(&mut s, 10, pad());
+    let mut ev = ollie(&mut s);
+    ev.extend(run(&mut s, 600, pad()));
+    let names = grind_names(&ev);
+    let ends: Vec<_> = ev.iter().filter_map(|e| if let Event::GrindEnd { reason, .. } = e { Some(reason.clone()) } else { None }).collect();
+    assert!(names.len() <= 1, "grinds {names:?}, ends {ends:?}, at {:?} state {:?}", s.p.pos, s.p.state);
+    // And back on the ground, beside the ledge or on it, not hanging in the air over it.
+    assert_eq!(s.p.state, State::Ground, "ends {ends:?}, at {:?} vel {:?}", s.p.pos, s.p.vel);
+}

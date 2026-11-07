@@ -169,10 +169,9 @@ impl Scoring {
         };
         self.multiplier = self.multiplier.max(m);
         if !self.line_live {
-            // A small sequence with no line running is score at once.
-            self.score += self.line_total;
-            self.line_total = 0.0;
-            self.used.clear();
+            // A small sequence with no line running is score at once, said as a line of its
+            // own: the realm scores only what a line's end tells it.
+            self.end_line();
         }
     }
 
@@ -203,6 +202,15 @@ impl Scoring {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn a_small_sequence_with_no_line_ends_as_a_line_of_its_own() {
+        let mut s = Scoring::new();
+        s.add_value("Ollie", "Ollie", 0.0, 0.0, 1.0);
+        s.bank(1.0, 5.0);
+        assert!(!s.line_live);
+        assert!(s.score > 0.0);
+        assert!(s.events.iter().any(|e| matches!(e, ScoreEvent::LineEnded { points } if *points == s.score)));
+    }
     #[test]
     fn repeat_in_line_scores_sixty_percent() {
         let mut s = Scoring::new();

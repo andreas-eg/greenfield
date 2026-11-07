@@ -256,6 +256,9 @@ pub struct Player {
     pub(crate) body_flip_rate: f32,
     pub grind: Option<GrindState>,
     pub grind_block: u32,
+    /// The rail a grind just fell off (leaned off, stalled, lost it): not locked onto again
+    /// until a pop or the ground away from it, or a stalled ledge re-locks where it stopped.
+    pub fell_off_rail: Option<u32>,
     pub anti_flicker: f32,
     pub anti_flicker_block: u32,
     pub jump_energy: f32,
@@ -342,6 +345,7 @@ impl Player {
             body_flip_rate: 0.0,
             grind: None,
             grind_block: 0,
+            fell_off_rail: None,
             anti_flicker: 0.0,
             anti_flicker_block: 0,
             jump_energy: 1.0,
@@ -634,6 +638,7 @@ impl Sim {
                 let h = pop(p, &t, c.strength, from_manual, it);
                 begin_air(p, g, from_manual, false, dark, &t);
                 self.events.push(Event::Pop { height: h, strength: c.strength });
+                p.fell_off_rail = None;
                 predict(w, p, &t, true, true);
                 return;
             }

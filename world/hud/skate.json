@@ -15,7 +15,7 @@
 
     {"id": "session_count", "type": "countdown", "place": "centre", "look": "numeral", "seconds": 2, "then": "SKATE!", "hold": 1.0,
      "when": {"attr": "skate_session", "eq": 1}},
-    {"id": "session_time", "type": "countdown", "place": "bottom", "look": "numeral", "seconds": 120, "then": "TIME!", "hold": 2,
+    {"id": "session_time", "type": "countdown", "place": "top_right", "look": "plate", "tone": "accent", "seconds": 120, "then": "TIME!", "hold": 2,
      "when": {"attr": "skate_session", "eq": 2}},
     {"id": "session_score", "type": "text", "place": "top_right", "look": "plate", "text": "SESSION  {skate_session_score}",
      "when": {"attr": "skate_session", "in": [1, 2]}},

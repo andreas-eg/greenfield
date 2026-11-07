@@ -148,8 +148,16 @@ pub fn detect(sim: &mut Sim, it: &Intents) {
         return;
     }
     let above = if in_air { 0.08 } else { 0.03 };
-    let Some((chord, family, nose)) = classify(&sim.world, p, it, None, above) else { return };
+    let Some((chord, family, nose)) = classify(&sim.world, p, it, None, above) else {
+        if !in_air {
+            sim.p.fell_off_rail = None;
+        }
+        return;
+    };
     let c = sim.world.chords[chord as usize];
+    if sim.p.fell_off_rail == Some(c.rail) {
+        return;
+    }
     // Coming down onto the rail from the air, never rising through it; and with the board
     // roughly upright to it, unless the prediction aimed at this very rail. A vert air
     // falling back past the coping re-enters the wall, it does not stall on the lip.
@@ -560,7 +568,7 @@ pub fn grind_tick(sim: &mut Sim, it: &Intents, completion: Option<Completion>) {
         }
     } else if along.abs() < 0.15 {
         g.stall_t += DT;
-        if g.stall_t > if ledge { 4.0 } else { 1.0 } {
+        if g.stall_t > if ledge { t.grind_ledge_stall } else { 1.0 } {
             fall = Some((if g.top_side.len2() > 0.0 { -g.top_side } else { g.came_from }, "stalled"));
         }
     } else {
@@ -580,6 +588,7 @@ pub fn grind_tick(sim: &mut Sim, it: &Intents, completion: Option<Completion>) {
         let boardslide_round = g.family == GrindFamily::Boardslide && g.kind == RailKind::ThinRail && !coping && g.lost == 0;
         finish(sim, &g, &c, reason);
         let p = &mut sim.p;
+        p.fell_off_rail = Some(c.rail);
         p.vel += dir * 1.5 + UP * 1.0;
         p.grind_block = 10;
         if boardslide_round && fall.is_some() && it.grind_nudge.abs() >= 0.9 {

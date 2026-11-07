@@ -20,7 +20,7 @@ string *skate_spots() { return ({ "ovningsplanen", "plattan", "ralis", "fryshuse
 
 // Where a skater arrives at each spot: its start mark (sk8/src/spots.rs), x then z.
 float *skate_start(string spot) {
-    if (spot == "plattan") return ({ 0.0, 8.0 });
+    if (spot == "plattan") return ({ 7.6, 13.0 });
     if (spot == "fryshuset") return ({ -6.0, 0.0 });
     return ({ 0.0, 0.0 });
 }

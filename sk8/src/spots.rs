@@ -75,9 +75,12 @@ pub fn plattan() -> SpotFile {
     b.ledge(s, RailMaterial::Stone, -30.0, 0.0, 0.0, 1.2, 36.0, 0.18, 0.0);
     // The glass obelisk's base on the upper level, not rideable.
     b.block(Surface::Unrideable, 0.0, -27.0, 2.4, 6.0, 6.0, 1.0, 0.0);
-    b.mark("start", v3(0.0, 0.0, 8.0), std::f32::consts::PI);
+    // The start looks down the east bench's line, 0.4 m off it: push twice and ollie for a
+    // first 50-50, rather than facing the open plaza with every ledge behind (player test
+    // 2026-11-07).
+    b.mark("start", v3(7.6, 0.0, 13.0), std::f32::consts::PI);
     b.mark("stairs_top", v3(14.0, 2.4, -24.0), 0.0);
-    b.finish("plattan", "Plattan, Sergels torg", v3(0.0, 0.0, 8.0), std::f32::consts::PI)
+    b.finish("plattan", "Plattan, Sergels torg", v3(7.6, 0.0, 13.0), std::f32::consts::PI)
 }
 
 /// Rålis, the concrete park in Rålambshovsparken: a bowl, a mini ramp, banks, a hubba, a
