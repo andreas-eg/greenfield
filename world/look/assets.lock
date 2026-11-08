@@ -2,6 +2,46 @@
  "_comment": "Every file greenfield's world is drawn with, by the hash Studio keeps it under (as S\u00f6der's assets.lock). The files are published in the SODER project for now (SODER-WORLD-S72).",
  "project": "SODER",
  "assets": {
+  "kit/beargarden/spot_bjorns.glb": {
+   "sha256": "559d14ead83d9e63672e90426ea4556ed4f64cf596f31bf692f88206a1b276d7",
+   "size": 1057336
+  },
+  "kit/beargarden/spot_bjorns_floor.glb": {
+   "sha256": "3ca26259c6bef6d863e29b003c1ffd98f762ff420d576a3b4f2cf7d8d64995a3",
+   "size": 64252
+  },
+  "kit/beargarden/spot_fryshuset.glb": {
+   "sha256": "1c16cd6a7dd5854734ade3a0a2f51816e78ee6a9c1cffce9caa28bcbc603a23f",
+   "size": 46828
+  },
+  "kit/beargarden/spot_fryshuset_floor.glb": {
+   "sha256": "716875335d8b5e7826b94bc82469a07d38fecc2a10af45faf001b60960e55450",
+   "size": 22256
+  },
+  "kit/beargarden/spot_ovningsplanen.glb": {
+   "sha256": "d2bc77dd771351d4db02312cb5d18ad0276eaf75e27c3306740ff0d0416e5c37",
+   "size": 248672
+  },
+  "kit/beargarden/spot_ovningsplanen_floor.glb": {
+   "sha256": "50f19140ac150375a4f45d73b5ce344bf6439e27880e880dd6db9d44926ece7a",
+   "size": 17788
+  },
+  "kit/beargarden/spot_plattan.glb": {
+   "sha256": "a20728a931293c194884efb9d7987f783928d349def82e81ada27953c721aab9",
+   "size": 75388
+  },
+  "kit/beargarden/spot_plattan_floor.glb": {
+   "sha256": "a863e8f485118edf9c1fd757f45c7ab0c65df6a250e726456e5d4ee9e78c5a32",
+   "size": 23464
+  },
+  "kit/beargarden/spot_ralis.glb": {
+   "sha256": "a18f64af3b060b7c44390aeb03032492ce0f0d1781d2b0709d421673c58feff2",
+   "size": 249888
+  },
+  "kit/beargarden/spot_ralis_floor.glb": {
+   "sha256": "99b7b364fa8a37e4d2a4783139857a5fa46ac9e39f74f2619df654ebe44e5ad5",
+   "size": 25996
+  },
   "kit/greenfield/field.glb": {
    "sha256": "9012857262b517b54f62eccec1dfb6d39293652b2b768f46cdf58352d18b0cf4",
    "size": 1892
@@ -33,6 +73,30 @@
   "realm/scenes/band-mixamo-20261006/zikai.glb": {
    "sha256": "481946d4872ac5c0da09ce7f1021b34ae5aa5b2e6aa1ab8a44a30d8a071f9a7b",
    "size": 11938112
+  },
+  "realm/scenes/skaters/erik.glb": {
+   "sha256": "29bc70c854e544b831973a338ef101c0e60bb9bbe965d8d7ec5847e4d6719966",
+   "size": 10163452
+  },
+  "realm/scenes/skaters/hugo.glb": {
+   "sha256": "bfec3a80fecb03ea15674b32fe4dd1e351f37cc86b3e66bc912ed25b2f3b9884",
+   "size": 8561436
+  },
+  "realm/scenes/skaters/npc06.glb": {
+   "sha256": "d2bcfd6a8ca449645446acab300312e54568170643432b6408b717e6f03f5d95",
+   "size": 7163156
+  },
+  "realm/scenes/skaters/npc09.glb": {
+   "sha256": "4df2700ca59766b7cc985bcfdaec9b2ebce78b5730188f48903adf41d604e720",
+   "size": 7063016
+  },
+  "realm/scenes/skaters/npc20.glb": {
+   "sha256": "0254c588d752112fde46847cfe27a062ddd52ca9c09a9ca66f5effa17582ff1e",
+   "size": 7163456
+  },
+  "realm/scenes/skaters/zikai.glb": {
+   "sha256": "e0eeb1c7f2a42d3fb5edc290f1a5676820b6cfb3bf364dd22bfb4b2293d7b76c",
+   "size": 13594232
   }
  }
 }
