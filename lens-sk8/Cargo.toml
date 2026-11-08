@@ -1,0 +1,12 @@
+[package]
+name = "lens-sk8"
+version = "0.1.0"
+edition = "2021"
+description = "Beargarden's skateboard as a lens game mode: the sk8 simulation behind the lens's lens-mode contract, for a drive that says \"sim\": \"sk8\"."
+publish = false
+
+[dependencies]
+sk8 = { path = "../sk8" }
+lens-mode = { git = "ssh://git@github.com/eldergrounds/lens.git", branch = "feat/soder-lens-s260-game-modes" }
+glam = "0.29"
+serde_json = "1"
