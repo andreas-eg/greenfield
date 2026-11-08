@@ -7,6 +7,6 @@ publish = false
 
 [dependencies]
 sk8 = { path = "../sk8" }
-lens-mode = { git = "ssh://git@github.com/eldergrounds/lens.git", rev = "9ea2ba239f1abce6d041609c60990e05526aa70f" }
+lens-mode = { git = "ssh://git@github.com/eldergrounds/lens.git", rev = "45f307db8908751c366d6043c05b28bafb4d85a0" }
 glam = "0.29"
 serde_json = "1"
