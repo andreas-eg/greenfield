@@ -226,3 +226,30 @@ fn ovningsplanen_bank_up_to_the_west_deck_and_along_it() {
 fn ralis_bank_up_to_the_south_deck_and_along_it() {
     up_the_bank_and_along_the_deck("ralis", v3(-4.0, 0.0, -9.0), std::f32::consts::PI, 1.2, v3(-1.0, 0.0, 0.0));
 }
+
+/// Flat out on the scooter across Plattan, up the east bank and over the deck: the rider stops
+/// at the parapet on the deck's outer edge, short of the buildings' faces (x 46) where no body
+/// may stand. Without it the scooter ran into the building edge at x 45.75 and the lens put
+/// the rider back on their feet (SODER-BUG-657).
+/// @bug SODER-BUG-657
+#[test]
+fn plattan_east_deck_stops_a_full_throttle_scooter_at_its_parapet() {
+    let spot = sk8::spots::all().into_iter().find(|s| s.name == "plattan").unwrap();
+    let mut s = Sim::new(World::from_spot(&spot), Difficulty::Normal);
+    s.set_tuning(Difficulty::Normal, &std::fs::read_to_string("../world/skate/tuning.txt").unwrap(), "arcade");
+    s.set_vehicle(sk8::Vehicle::Scooter);
+    s.place(v3(16.0, 0.0, 0.0), v3(1.0, 0.0, 0.0));
+    s.p.grace = 0.0;
+    s.set_stick_push(1.0);
+    let mut furthest = f32::MIN;
+    let mut top = 0.0f32;
+    for _ in 0..60 * 10 {
+        s.step(&[VirtualController::default()]);
+        s.take_events();
+        furthest = furthest.max(s.p.pos.x);
+        top = top.max(s.p.speed());
+    }
+    assert!(top > 9.0, "never got up to speed: {top:.1} m/s");
+    assert!(furthest > 40.0, "never got onto the east deck: furthest x {furthest:.2}");
+    assert!(furthest < 45.6, "past the parapet into the buildings: x {furthest:.2}");
+}

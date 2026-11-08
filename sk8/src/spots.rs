@@ -61,11 +61,21 @@ pub fn plattan() -> SpotFile {
     // South of the side decks, beside the upper level, the deck carries on to the south
     // buildings, and a 6 m bank (11 deg) climbs the last 1.2 m onto the upper level: the
     // platforms go all the way round, the upper level their south side.
+    b.look(Some("deck"));
     for sx in [-1.0f32, 1.0] {
         b.block(s, sx * 39.0, -26.0, 0.0, 14.0, 8.0, 1.2, 0.0);
         let (lo, hi) = (sx * 38.0, sx * 32.0);
         b.quad(s, v3(lo, 1.2, -30.0), v3(lo, 1.2, -22.0), v3(hi, 2.4, -22.0), v3(hi, 2.4, -30.0), UP);
         b.tri(s, v3(lo, 1.2, -22.0), v3(hi, 2.4, -22.0), v3(hi, 1.2, -22.0), v3(0.0, 0.0, 1.0));
+    }
+    b.look(None);
+    // A 0.9 m parapet along the decks' outer edge, as Rålis and Övningsplanen have: at full
+    // speed a rider stops at it, not in the buildings' faces where no body may stand
+    // (SODER-BUG-657).
+    // @bug SODER-BUG-657
+    let (t, ph) = (0.3, 1.2 + 0.9);
+    for (x, z, w, d) in [(-46.0 + t * 0.5, 2.0, t, 64.0), (46.0 - t * 0.5, 2.0, t, 64.0), (0.0, 34.0 - t * 0.5, 92.0, t), (-39.0, -30.0 + t * 0.5, 14.0, t), (39.0, -30.0 + t * 0.5, 14.0, t)] {
+        b.block(Surface::Unrideable, x, z, 0.0, w, d, ph, 0.0);
     }
     // The buildings that close the square: Drottninggatan's corner to the north, the
     // blocks to the east and west.
