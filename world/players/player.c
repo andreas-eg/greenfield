@@ -217,6 +217,24 @@ int command(string verb, string args) {
         set_attr(this_player(), "skate_pick", query_attr(this_player(), "skate_pick") == 1 ? 0 : 1);
         return 1;
     }
+    // I'M STUCK, as Söder's player has it (SODER-LENS-S32): the lens says where the body last
+    // stood on the ground and, if that is near, it goes back there. Without it the lens's
+    // `stuck x z` was answered "Huh?" (SODER-BUG-657).
+    // @bug SODER-BUG-657
+    if (verb == "stuck") {
+        string *parts = args ? explode(args, " ") : ({});
+        float dx, dz;
+        if (sizeof(parts) < 2) return 0;
+        dx = to_float(parts[0]) - query_x(this_player());
+        dz = to_float(parts[1]) - query_z(this_player());
+        if (dx * dx + dz * dz > 25.0 * 25.0) {
+            write("Too far from where you stand.");
+            return 1;
+        }
+        transport(this_player(), query_room(this_player()), to_float(parts[0]), to_float(parts[1]));
+        write("Back on your feet.");
+        return 1;
+    }
     if (verb == "score") {
         write("Score " + query_attr(this_player(), "skate_score") + ", best line " + query_attr(this_player(), "skate_best_line") + ".");
         return 1;
