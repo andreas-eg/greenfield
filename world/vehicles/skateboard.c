@@ -19,10 +19,11 @@ void create() {
     add_verb("use", "Step on", "skateboard", 1.8);
     add_verb("exit", "Step off", "skateboard_off", 0.0);
     // What a lens without sk8 binds; with sk8 the controls are the sim's (C.2).
-    add_control("kick", "Push", "foot");
-    add_control("brake", "Foot brake", "foot");
+    // The third word is the icon the glass draws in the circle (SODER-LENS-S276).
+    add_control("kick", "Push", "push");
+    add_control("brake", "Foot brake", "brake");
     add_control("steer", "Lean", "weight");
-    add_control("trick", "Ollie", "hand");
+    add_control("trick", "Ollie", "ollie");
     set_drive(([
         "kind": "kick", "cruise": 4.0, "top": 8.5, "power": 2.0, "brake": 5.0,
         "turn": 2.4, "kick_fade": 0.65, "lean": 0.3, "chassis": "lean",

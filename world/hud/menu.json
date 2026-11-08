@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "title": "BEARGARDEN SK8R",
+  "arrival": "cut",
   "items": [
     {"id": "continue", "label": "Continue", "do": "continue"},
     {"id": "new_game", "label": "New game", "do": "new_game"},
