@@ -26,8 +26,34 @@
     {"id": "record", "type": "text", "place": "centre_low", "look": "plate", "tone": "good", "text": "NEW BEST",
      "when": [{"attr": "skate_session", "eq": 3}, {"attr": "skate_record", "eq": 1}]},
     {"id": "best", "type": "text", "place": "centre_low", "text": "BEST HERE {skate_best}",
-     "when": [{"attr": "skate_session", "eq": 3}, {"attr": "skate_record", "eq": 0}]}
+     "when": [{"attr": "skate_session", "eq": 3}, {"attr": "skate_record", "eq": 0}]},
+
+    {"id": "feel", "type": "text", "place": "centre_low", "look": "plate", "text": "HOW DID THAT FEEL?  1 MEH ... 5 GREAT",
+     "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]}
   ],
+  "touch": {
+    "phone": {"buttons": [
+      {"id": "feel1", "label": "1", "command": "feel 1", "right": 710, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel2", "label": "2", "command": "feel 2", "right": 540, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel3", "label": "3", "command": "feel 3", "right": 370, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel4", "label": "4", "command": "feel 4", "right": 200, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel5", "label": "5", "command": "feel 5", "right": 30, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]}
+    ]},
+    "tablet": {"buttons": [
+      {"id": "feel1", "label": "1", "command": "feel 1", "right": 710, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel2", "label": "2", "command": "feel 2", "right": 540, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel3", "label": "3", "command": "feel 3", "right": 370, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel4", "label": "4", "command": "feel 4", "right": 200, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel5", "label": "5", "command": "feel 5", "right": 30, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]}
+    ]},
+    "desk": {"buttons": [
+      {"id": "feel1", "label": "1", "command": "feel 1", "right": 710, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel2", "label": "2", "command": "feel 2", "right": 540, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel3", "label": "3", "command": "feel 3", "right": 370, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel4", "label": "4", "command": "feel 4", "right": 200, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+      {"id": "feel5", "label": "5", "command": "feel 5", "right": 30, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]}
+    ]}
+  },
   "theme": {
     "colors": {"ink": "#111418", "primary": "#2bb673", "highlight": "#ffe14d", "text": "#ffffff"},
     "fonts": {"display": "russo-one", "small": "chakra-petch"},

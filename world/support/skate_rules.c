@@ -172,6 +172,7 @@ string skate_session_start(object who) {
     if (query_attr(who, "riding") != "skateboard") return "Step on a board first.";
     skate_line_end(who);
     set_attr(who, "skate_session", 1);
+    set_attr(who, "skate_feel", 0);
     set_attr(who, "skate_session_score", 0);
     set_attr(who, "skate_session_left", skate_session_beats());
     set_attr(who, "skate_session_spot", spot);
@@ -206,6 +207,8 @@ string skate_session_tick(object who) {
     best = query_attr(who, "skate_best_" + spot);
     set_attr(who, "skate_session", 3);
     set_attr(who, "skate_card_left", 8);
+    // How did that feel? Asked on the glass until answered (players/player.c `feel`).
+    set_attr(who, "skate_feel", 1);
     set_attr(who, "skate_result", query_attr(who, "skate_session_score"));
     if (query_attr(who, "skate_session_score") > best) {
         set_attr(who, "skate_best_" + spot, query_attr(who, "skate_session_score"));

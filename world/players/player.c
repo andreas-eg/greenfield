@@ -66,6 +66,24 @@ int command(string verb, string args) {
     string room;
     object b;
     int n;
+    string words;
+    if (verb == "feel") {
+        // After a session (skate_feel), how did that feel: 1 to 5 and a line if you like. Kept on
+        // the player (skate_feelings, saved with them) and said back, so a phone's diagnostics,
+        // which the app uploads, carry it as well (the sk8r prototype's feedback).
+        words = "";
+        if (!args || (sscanf(args, "%d %s", n, words) != 2 && sscanf(args, "%d", n) != 1)) n = 0;
+        if (n < 1 || n > 5) {
+            write("How did that feel? feel 1 to 5, and a line if you like.");
+            return 1;
+        }
+        what = query_attr(this_player(), "skate_feelings");
+        if (!what) what = "";
+        set_attr(this_player(), "skate_feelings", what + query_attr(this_player(), "skate_session_spot") + " " + query_attr(this_player(), "skate_result") + " " + n + " " + words + "|");
+        set_attr(this_player(), "skate_feel", 0);
+        write("Feedback kept: " + n + " of 5" + (words != "" ? ", " + words : "") + ". Thanks!");
+        return 1;
+    }
     if (verb == "skate") {
         if (!args || args == "") return 0;
         if (sscanf(args, "banked %s", what) == 1) {
