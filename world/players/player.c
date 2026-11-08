@@ -59,24 +59,6 @@ void heart_beat() {
     if (said != "") write(said);
 }
 
-// Onto the first free board of the spot the player is at; 1 when they are on one.
-int board_here() {
-    string room;
-    object b;
-    int n;
-    room = query_room(this_player());
-    for (n = 1; n <= 3; n++) {
-        b = find_placed(room, "board_" + n);
-        if (b && b->is_free()) {
-            // The board comes to the skater, not the skater to wherever it was left.
-            b->put(query_x(this_player()), query_z(this_player()));
-            board_player(this_player(), b, 1);
-            return 1;
-        }
-    }
-    return 0;
-}
-
 int command(string verb, string args) {
     string what;
     int kept;
@@ -193,9 +175,6 @@ int command(string verb, string args) {
         return 1;
     }
     if (verb == "session") {
-        // Started on foot (the post's offer is there to anyone near it): onto a board first.
-        // The board's own hook says riding a moment later; the session needs it now.
-        if (query_attr(this_player(), "riding") != "skateboard" && board_here()) set_attr(this_player(), "riding", "skateboard");
         write(skate_session_start(this_player()));
         return 1;
     }

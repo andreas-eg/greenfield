@@ -141,11 +141,34 @@ void skate_bail(object who, string reason) {
 
 int skate_session_beats() { return 60; }   // 60 world ticks of 2 s: two minutes
 
+// Onto the first free board of the spot the player is at; 1 when they are on one.
+// (Here so the session post's offer and the soul's `session` verb both board a skater.)
+int board_here() {
+    string room;
+    object b;
+    int n;
+    room = query_room(this_player());
+    for (n = 1; n <= 3; n++) {
+        b = find_placed(room, "board_" + n);
+        if (b && b->is_free()) {
+            // The board comes to the skater, not the skater to wherever it was left.
+            b->put(query_x(this_player()), query_z(this_player()));
+            board_player(this_player(), b, 1);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 string skate_session_start(object who) {
     string spot;
     spot = query_attr(who, "skate_spot");
     if (!spot) return "Sessions are skated at a spot: Plattan, Rålis, Fryshuset, Övningsplanen or Björns trädgård.";
     if (query_attr(who, "skate_session") == 1 || query_attr(who, "skate_session") == 2) return "A session is running. Skate it out.";
+    // Started on foot (the post's offer is there to anyone near it): onto a board first. The
+    // board's own hook says riding a moment later; the session needs it now. Both ways in, the
+    // post's offer and the soul's `session`, come here (the offer did not board, 2026-11-08).
+    if (query_attr(who, "riding") != "skateboard" && board_here()) set_attr(who, "riding", "skateboard");
     if (query_attr(who, "riding") != "skateboard") return "Step on a board first.";
     skate_line_end(who);
     set_attr(who, "skate_session", 1);
