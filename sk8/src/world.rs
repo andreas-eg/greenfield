@@ -152,6 +152,10 @@ pub struct Hit {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SpotMesh {
     pub surface: Surface,
+    /// How it is drawn when not by its surface alone: "deck" for the banks and decks round a
+    /// spot (SODER-LENS-S350). Drawing only; sk8 rides by `surface`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub look: Option<String>,
     pub vertices: Vec<[f32; 3]>,
     pub triangles: Vec<[u32; 3]>,
 }

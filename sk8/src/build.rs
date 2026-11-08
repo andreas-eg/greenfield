@@ -11,6 +11,8 @@ pub struct Builder {
     meshes: Vec<SpotMesh>,
     rails: Vec<SpotRail>,
     marks: Vec<SpotMark>,
+    /// The look new triangles are drawn with (`SpotMesh::look`).
+    look: Option<String>,
 }
 
 fn arr(v: Vec3) -> [f32; 3] {
@@ -22,11 +24,16 @@ impl Builder {
         Builder::default()
     }
 
+    /// Draw what comes next with `look` (None: by its surface), until told otherwise.
+    pub fn look(&mut self, look: Option<&str>) {
+        self.look = look.map(str::to_string);
+    }
+
     fn mesh(&mut self, s: Surface) -> &mut SpotMesh {
-        if let Some(i) = self.meshes.iter().position(|m| m.surface == s) {
+        if let Some(i) = self.meshes.iter().position(|m| m.surface == s && m.look == self.look) {
             return &mut self.meshes[i];
         }
-        self.meshes.push(SpotMesh { surface: s, vertices: Vec::new(), triangles: Vec::new() });
+        self.meshes.push(SpotMesh { surface: s, look: self.look.clone(), vertices: Vec::new(), triangles: Vec::new() });
         self.meshes.last_mut().unwrap()
     }
 
@@ -159,6 +166,9 @@ impl Builder {
         let (hx, hz) = ((x1 - x0) * 0.5, (z1 - z0) * 0.5);
         let y1 = y0 + h;
         let far = run + deck;
+        // Its own concrete, not the floor's (SODER-LENS-S350).
+        let was = self.look.take();
+        self.look(Some("deck"));
         // Per side: outward normal, tangent, half depth to the edge, half length along it,
         // the sides at its -tangent and +tangent ends, and whether its deck takes the corners.
         let x = v3(1.0, 0.0, 0.0);
@@ -189,6 +199,7 @@ impl Builder {
                 }
             }
         }
+        self.look = was;
         (x0 - if sides[3] { far } else { 0.0 }, z0 - if sides[2] { far } else { 0.0 }, x1 + if sides[1] { far } else { 0.0 }, z1 + if sides[0] { far } else { 0.0 })
     }
 

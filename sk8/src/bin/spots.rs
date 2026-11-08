@@ -23,7 +23,7 @@ fn bounds(f: &SpotFile) -> [f32; 4] {
 }
 
 /// The palette: one texel a surface, four by four.
-const PALETTE: [(&str, [u8; 3]); 10] = [
+const PALETTE: [(&str, [u8; 3]); 13] = [
     ("smooth", [188, 184, 176]),
     ("rough", [138, 134, 128]),
     ("slow", [96, 132, 70]),
@@ -34,6 +34,11 @@ const PALETTE: [(&str, [u8; 3]); 10] = [
     ("metal", [196, 120, 52]),
     ("edge", [236, 232, 222]),
     ("coping", [150, 156, 164]),
+    // The banks and decks round a spot (SODER-LENS-S350): sand-toned slopes, darker concrete
+    // decks, a pale steel line along each bank's top, none of them the floor's grey.
+    ("bank", [190, 158, 112]),
+    ("deck", [128, 120, 108]),
+    ("deck_edge", [226, 230, 236]),
 ];
 
 fn texel(name: &str) -> [f32; 2] {
@@ -183,6 +188,28 @@ fn is_floor(a: [f32; 3], b: [f32; 3], c: [f32; 3], floor: f32) -> bool {
     [a, b, c].iter().all(|p| (p[1] - floor).abs() < 0.02)
 }
 
+/// A bank or deck triangle (SODER-LENS-S350): a slope in the bank's colour with a steel line
+/// along its top edge, so where a bank ends reads from the floor; anything level or upright
+/// in the deck's. The line is drawn only: it is no rail, nothing grinds it.
+fn deck_tri(g: &mut Geo, t: [[f32; 3]; 3]) {
+    let [a, b, c] = t;
+    let (u, v) = ([b[0] - a[0], b[1] - a[1], b[2] - a[2]], [c[0] - a[0], c[1] - a[1], c[2] - a[2]]);
+    let n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+    let up = n[1].abs() / (n[0] * n[0] + n[1] * n[1] + n[2] * n[2]).sqrt().max(1e-9);
+    if up > 0.999 || up < 0.3 {
+        g.tri(a, b, c, texel("deck"));
+        return;
+    }
+    g.tri(a, b, c, texel("bank"));
+    let top = a[1].max(b[1]).max(c[1]);
+    for (p, q, r) in [(a, b, c), (b, c, a), (c, a, b)] {
+        if (p[1] - top).abs() < 0.01 && (q[1] - top).abs() < 0.01 && r[1] < top - 0.05 {
+            let lift = |x: [f32; 3]| [x[0], x[1] + 0.02, x[2]];
+            g.tube(lift(p), lift(q), 0.04, texel("deck_edge"));
+        }
+    }
+}
+
 /// The spot's floor (its own mesh, tiled with `pattern`) and everything else (the palette).
 /// The mesh names a spot is drawn with: `spot_<name>`, then `spot_<name>_2` and on for a spot
 /// too big for one (`parts`).
@@ -217,9 +244,12 @@ fn spot_glbs(f: &SpotFile, floor_y: f32) -> (Vec<Vec<u8>>, Vec<u8>) {
     for m in &f.meshes {
         let surface = serde_json::to_value(m.surface).ok().and_then(|v| v.as_str().map(str::to_string)).unwrap_or_else(|| "smooth".into());
         let uv = texel(&surface);
+        let deck = m.look.as_deref() == Some("deck");
         for t in &m.triangles {
             let p = |i: u32| m.vertices[i as usize];
-            if surface == "smooth" && is_floor(p(t[0]), p(t[1]), p(t[2]), floor_y) {
+            if deck {
+                deck_tri(&mut g, [p(t[0]), p(t[1]), p(t[2])]);
+            } else if surface == "smooth" && is_floor(p(t[0]), p(t[1]), p(t[2]), floor_y) {
                 floor.tri(p(t[0]), p(t[1]), p(t[2]), [0.0, 0.0]);
             } else {
                 g.tri(p(t[0]), p(t[1]), p(t[2]), uv);
