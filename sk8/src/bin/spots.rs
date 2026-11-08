@@ -184,7 +184,34 @@ fn is_floor(a: [f32; 3], b: [f32; 3], c: [f32; 3], floor: f32) -> bool {
 }
 
 /// The spot's floor (its own mesh, tiled with `pattern`) and everything else (the palette).
-fn spot_glbs(f: &SpotFile, floor_y: f32) -> (Vec<u8>, Vec<u8>) {
+/// The mesh names a spot is drawn with: `spot_<name>`, then `spot_<name>_2` and on for a spot
+/// too big for one (`parts`).
+fn part_name(spot: &str, k: usize) -> String {
+    if k == 0 {
+        format!("spot_{spot}")
+    } else {
+        format!("spot_{spot}_{}", k + 1)
+    }
+}
+
+/// The lens draws a mesh's primitives from one vertex list with u16 indices (SODER-BUG-628),
+/// so a spot over 65 535 vertices (the city spot, SODER-LENS-S272) goes out as several meshes
+/// of at most that many; a smaller one is one mesh, as before.
+fn parts(g: &Geo) -> Vec<Geo> {
+    let most = 65_535 / 3 * 3;
+    if g.pos.len() <= most {
+        return vec![Geo { pos: g.pos.clone(), nrm: g.nrm.clone(), uv: g.uv.clone() }];
+    }
+    (0..g.pos.len())
+        .step_by(most)
+        .map(|s| {
+            let e = (s + most).min(g.pos.len());
+            Geo { pos: g.pos[s..e].to_vec(), nrm: g.nrm[s..e].to_vec(), uv: g.uv[s..e].to_vec() }
+        })
+        .collect()
+}
+
+fn spot_glbs(f: &SpotFile, floor_y: f32) -> (Vec<Vec<u8>>, Vec<u8>) {
     let mut g = Geo::default();
     let mut floor = Geo::default();
     for m in &f.meshes {
@@ -219,7 +246,8 @@ fn spot_glbs(f: &SpotFile, floor_y: f32) -> (Vec<u8>, Vec<u8>) {
         "ralis" => "asphalt",
         _ => "slabs",
     };
-    (glb(&g, palette_png(), &format!("spot_{}", f.name), None), glb(&floor, floor_png(pattern), &format!("spot_{}_floor", f.name), Some(FLOOR_TILE)))
+    let things = parts(&g).iter().enumerate().map(|(k, p)| glb(p, palette_png(), &part_name(&f.name, k), None)).collect();
+    (things, glb(&floor, floor_png(pattern), &format!("spot_{}_floor", f.name), Some(FLOOR_TILE)))
 }
 
 /// One mesh with one texture; `tile`, its UVs from where it is (the lens's
@@ -385,24 +413,27 @@ fn main() {
     let dir = std::env::args().nth(1).unwrap_or_else(|| "../world/charts".into());
     let meshes = std::env::args().nth(2).unwrap_or_else(|| "../conditioned/beargarden".into());
     std::fs::create_dir_all(&meshes).unwrap();
-    for f in sk8::spots::all() {
+    for f in sk8::spots::all().into_iter().chain(sk8::spots::surveyed()) {
         let skate = format!("{}/{}.skate.json", dir, f.name);
         std::fs::write(&skate, serde_json::to_string(&f).unwrap()).unwrap();
         let world = sk8::World::from_spot(&f);
         let (things, floor) = spot_glbs(&f, world.floor_y());
+        for (k, part) in things.iter().enumerate() {
+            std::fs::write(format!("{}/{}.glb", meshes, part_name(&f.name, k)), part).unwrap();
+        }
         let mesh = format!("{}/spot_{}.glb", meshes, f.name);
-        std::fs::write(&mesh, &things).unwrap();
         std::fs::write(format!("{}/spot_{}_floor.glb", meshes, f.name), &floor).unwrap();
-        let glb = things;
+        let glb: Vec<u8> = things.concat();
+        let mut instances = vec![serde_json::json!({ "mesh": format!("spot_{}_floor", f.name), "pos": [0.0, 0.0, 0.0], "rot_y": 0.0, "scale": 1.0 })];
+        for k in 0..things.len() {
+            instances.push(serde_json::json!({ "mesh": part_name(&f.name, k), "pos": [0.0, 0.0, 0.0], "rot_y": 0.0, "scale": 1.0 }));
+        }
         let b = bounds(&f);
         let chart = serde_json::json!({
             "_comment": format!("Written by beargarden/sk8 (cargo run --bin spots): {}, a skate spot. The lens draws spot_{}.glb (the same surfaces, coloured by kind) and rides {}.skate.json with sk8 (GF-REQ-LENS-1). Do not edit.", f.title, f.name, f.name),
             "assets": "conditioned/beargarden",
             "atmosphere": { "color": [0.72, 0.8, 0.88, 1.0], "start": 80.0, "end": 320.0 },
-            "instances": [
-                { "mesh": format!("spot_{}_floor", f.name), "pos": [0.0, 0.0, 0.0], "rot_y": 0.0, "scale": 1.0 },
-                { "mesh": format!("spot_{}", f.name), "pos": [0.0, 0.0, 0.0], "rot_y": 0.0, "scale": 1.0 }
-            ],
+            "instances": instances,
             "skate": format!("{}.skate.json", f.name),
             "walkmask": {
                 "extent": [b[0] + 0.5, b[1] + 0.5, b[2] - 0.5, b[3] - 0.5],

@@ -195,3 +195,23 @@ fn grass_round(b: &mut Builder, hw: f32, hd: f32, out: f32) {
 pub fn all() -> Vec<SpotFile> {
     vec![ovningsplanen(), plattan(), ralis(), fryshuset(), bjorns()]
 }
+
+/// Spots made from surveyed ground rather than built here: the SpotFiles in `sk8/spots/`
+/// (tools/city_spot.py writes Medborgarplatsen and Björns trädgård from GeoGen's island, the
+/// city spike). Read at run time, so a missing or unreadable file is left out and said.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn surveyed() -> Vec<SpotFile> {
+    let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("spots");
+    let mut files: Vec<_> = std::fs::read_dir(&dir).map(|d| d.flatten().map(|e| e.path()).filter(|p| p.extension().is_some_and(|x| x == "json")).collect()).unwrap_or_default();
+    files.sort();
+    files
+        .iter()
+        .filter_map(|p| match std::fs::read_to_string(p).map_err(|e| e.to_string()).and_then(|t| serde_json::from_str(&t).map_err(|e| e.to_string())) {
+            Ok(f) => Some(f),
+            Err(why) => {
+                eprintln!("{}: {why}", p.display());
+                None
+            }
+        })
+        .collect()
+}

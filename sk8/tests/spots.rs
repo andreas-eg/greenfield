@@ -10,7 +10,7 @@ use sk8::{Difficulty, Sim, VirtualController, World};
 
 #[test]
 fn no_spot_has_an_edge_to_ride_off() {
-    for spot in sk8::spots::all() {
+    for spot in sk8::spots::all().into_iter().chain(sk8::spots::surveyed()) {
         let world = World::from_spot(&spot);
         let mut starts = vec![world.spawn];
         for m in &spot.marks {
@@ -115,4 +115,36 @@ fn bjorns_big_bowl_drops_in_and_rides_across() {
     assert!(bails.is_empty(), "bailed: {bails:?}");
     assert!(low < -1.2, "down to {low} m, the floor is 1.35 m down");
     assert!(north < -4.0, "got as far north as z = {north}");
+}
+
+/// The city spike (tools/city_spot.py, SODER-LENS-S272): the real park's bowls as GeoGen made
+/// them, ridden as the hand-built Björns spot is above: from the park's start, rolling north at
+/// 4 m/s into the big bowl. Records how deep it goes and how far, and what bails.
+#[test]
+fn medborgarplatsen_bowls_from_geogen_drop_in_and_ride_across() {
+    let Some(spot) = sk8::spots::surveyed().into_iter().find(|s| s.name == "medborgarplatsen") else {
+        return eprintln!("no surveyed Medborgarplatsen (sk8/spots/): not ridden");
+    };
+    let mut s = Sim::new(World::from_spot(&spot), Difficulty::Normal);
+    s.t.apply_text_styled(&std::fs::read_to_string("../world/skate/tuning.txt").unwrap(), "arcade");
+    s.place(s.world.spawn, v3(0.0, 0.0, -1.0));
+    s.p.grace = 0.0;
+    s.p.vel = v3(0.0, 0.0, -4.0);
+    s.p.speed_target = 4.0;
+    let start = s.p.pos;
+    let (mut low, mut north, mut bails) = (start.y, start.z, Vec::new());
+    for _ in 0..60 * 4 {
+        s.step(&[VirtualController::default()]);
+        for e in s.take_events() {
+            if let Event::Bail { reason } = e {
+                bails.push(reason);
+            }
+        }
+        low = low.min(s.p.pos.y);
+        north = north.min(s.p.pos.z);
+    }
+    println!("medborgarplatsen bowls: down {:.2} m, {:.1} m north, bails {bails:?}", start.y - low, start.z - north);
+    assert!(bails.is_empty(), "bailed: {bails:?}");
+    assert!(start.y - low > 1.0, "down only {:.2} m", start.y - low);
+    assert!(start.z - north > 4.0, "only {:.1} m north", start.z - north);
 }
