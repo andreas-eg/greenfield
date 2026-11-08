@@ -440,6 +440,16 @@ impl Skate {
                 f["event"] = serde_json::to_value(&e).unwrap_or_default();
                 self.log("event", f);
             }
+            // What a player met, for the game's feedback from phones (the lens sends a mode's
+            // events on to Firebase): a bail and its reason, a run-out.
+            if let Event::Bail { reason } = &e {
+                let mut f = here(&self.sim);
+                f["reason"] = serde_json::json!(reason);
+                self.events.push(("sk8_bail".into(), f));
+            }
+            if matches!(e, Event::RunOut) {
+                self.events.push(("sk8_run_out".into(), here(&self.sim)));
+            }
             if matches!(e, Event::Bail { .. }) {
                 let p = self.sim.p.pos;
                 println!("  sk8: bailed at ({:.1}, {:.1}, {:.1}), {:.1} m/s", p.x, p.y, p.z, self.sim.p.speed());
@@ -724,6 +734,18 @@ mod tests {
         let record = ride.record();
         assert!(record.iter().any(|l| l.contains("\"on_board\"")), "{record:?}");
         assert!(ride.end().iter().any(|l| l.contains("\"off_board\"")));
+    }
+
+    #[test]
+    fn riding_into_plattans_far_edge_is_a_run_out_the_phone_reports() {
+        let mut ride = start(&plattan()).unwrap();
+        let push = Input { keys: vec!["KeyW".into()], ..Input::default() };
+        let mut events = Vec::new();
+        for _ in 0..(60 * 15) {
+            ride.step(1.0 / 60.0, &push);
+            events.extend(ride.events());
+        }
+        assert!(events.iter().any(|(k, _)| k == "sk8_run_out"), "{events:?}");
     }
 
     #[test]

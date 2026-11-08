@@ -1298,7 +1298,7 @@ checksum = "20870f649af7073d53e38067b2a84312175d56ea15217e1b15bc83506ec50afb"
 [[package]]
 name = "lens-app"
 version = "0.1.0"
-source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=da5548696f64c7326d4f1db851ce89fb9462e1f1#da5548696f64c7326d4f1db851ce89fb9462e1f1"
+source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=9ea2ba239f1abce6d041609c60990e05526aa70f#9ea2ba239f1abce6d041609c60990e05526aa70f"
 dependencies = [
  "flate2",
  "gilrs",
@@ -1325,7 +1325,7 @@ dependencies = [
 [[package]]
 name = "lens-camera"
 version = "0.1.0"
-source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=da5548696f64c7326d4f1db851ce89fb9462e1f1#da5548696f64c7326d4f1db851ce89fb9462e1f1"
+source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=9ea2ba239f1abce6d041609c60990e05526aa70f#9ea2ba239f1abce6d041609c60990e05526aa70f"
 dependencies = [
  "glam 0.29.3",
  "lens-client",
@@ -1334,7 +1334,7 @@ dependencies = [
 [[package]]
 name = "lens-client"
 version = "0.1.0"
-source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=da5548696f64c7326d4f1db851ce89fb9462e1f1#da5548696f64c7326d4f1db851ce89fb9462e1f1"
+source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=9ea2ba239f1abce6d041609c60990e05526aa70f#9ea2ba239f1abce6d041609c60990e05526aa70f"
 dependencies = [
  "serde",
  "serde_json",
@@ -1344,7 +1344,7 @@ dependencies = [
 [[package]]
 name = "lens-core"
 version = "0.1.0"
-source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=da5548696f64c7326d4f1db851ce89fb9462e1f1#da5548696f64c7326d4f1db851ce89fb9462e1f1"
+source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=9ea2ba239f1abce6d041609c60990e05526aa70f#9ea2ba239f1abce6d041609c60990e05526aa70f"
 dependencies = [
  "glam 0.29.3",
  "lens-camera",
@@ -1359,7 +1359,7 @@ dependencies = [
 [[package]]
 name = "lens-game"
 version = "0.1.0"
-source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=da5548696f64c7326d4f1db851ce89fb9462e1f1#da5548696f64c7326d4f1db851ce89fb9462e1f1"
+source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=9ea2ba239f1abce6d041609c60990e05526aa70f#9ea2ba239f1abce6d041609c60990e05526aa70f"
 dependencies = [
  "glam 0.29.3",
  "serde_json",
@@ -1369,7 +1369,7 @@ dependencies = [
 [[package]]
 name = "lens-mode"
 version = "0.1.0"
-source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=da5548696f64c7326d4f1db851ce89fb9462e1f1#da5548696f64c7326d4f1db851ce89fb9462e1f1"
+source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=9ea2ba239f1abce6d041609c60990e05526aa70f#9ea2ba239f1abce6d041609c60990e05526aa70f"
 dependencies = [
  "serde",
  "serde_json",
@@ -1378,7 +1378,7 @@ dependencies = [
 [[package]]
 name = "lens-render"
 version = "0.1.0"
-source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=da5548696f64c7326d4f1db851ce89fb9462e1f1#da5548696f64c7326d4f1db851ce89fb9462e1f1"
+source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=9ea2ba239f1abce6d041609c60990e05526aa70f#9ea2ba239f1abce6d041609c60990e05526aa70f"
 dependencies = [
  "bytemuck",
  "fontdue",
@@ -1397,7 +1397,7 @@ dependencies = [
 [[package]]
 name = "lens-sequencer"
 version = "0.1.0"
-source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=da5548696f64c7326d4f1db851ce89fb9462e1f1#da5548696f64c7326d4f1db851ce89fb9462e1f1"
+source = "git+ssh://git@github.com/eldergrounds/lens.git?rev=9ea2ba239f1abce6d041609c60990e05526aa70f#9ea2ba239f1abce6d041609c60990e05526aa70f"
 dependencies = [
  "glam 0.29.3",
  "kira",
