@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "elements": [
-    {"id": "score", "type": "counter", "place": "top_right", "label": "SCORE", "value": {"attr": "skate_score"}, "change": 2.0},
+    {"id": "score", "type": "counter", "place": "top_right", "label": "SCORE", "value": {"attr": "skate_score", "fallback": 0}, "change": 2.0},
     {"id": "line", "type": "text", "place": "top_right", "look": "plate", "text": "LINE {skate_line}",
      "when": {"attr": "skate_line", "gt": 0}},
     {"id": "trick1", "type": "text", "place": "centre_low", "look": "plate", "tone": "good", "text": "{skate_trick}",
@@ -19,7 +19,7 @@
      "when": {"attr": "skate_session", "eq": 1}},
     {"id": "session_time", "type": "countdown", "place": "top_right", "look": "plate", "tone": "accent", "seconds": 120, "then": "TIME!", "hold": 2,
      "when": {"attr": "skate_session", "eq": 2}},
-    {"id": "session_score", "type": "text", "place": "top_right", "look": "plate", "text": "SESSION  {skate_session_score}",
+    {"id": "session_score", "type": "counter", "place": "top_right", "label": "SESSION", "value": {"attr": "skate_session_score", "fallback": 0}, "change": 2.0,
      "when": {"attr": "skate_session", "in": [1, 2]}},
     {"id": "card", "type": "text", "place": "centre", "look": "numeral", "text": "SESSION  {skate_result}",
      "when": {"attr": "skate_session", "eq": 3}},
@@ -29,10 +29,22 @@
      "when": [{"attr": "skate_session", "eq": 3}, {"attr": "skate_record", "eq": 0}]},
 
     {"id": "feel", "type": "text", "place": "centre_low", "look": "plate", "text": "HOW DID THAT FEEL?  1 MEH ... 5 GREAT",
-     "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]}
+     "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
+
+    {"id": "board_card", "type": "text", "place": "centre", "look": "plate", "text": "{skate_card_text}",
+     "when": {"attr": "skate_card_beats", "gt": 0}},
+    {"id": "pick", "type": "text", "place": "centre_low", "look": "plate", "text": "RIDE TO WHICH SPOT?",
+     "when": {"attr": "skate_pick", "eq": 1}}
   ],
   "touch": {
     "phone": {"buttons": [
+      {"id": "session", "label": "SESSION", "icon": "session", "command": "session", "right": 40, "up": 300, "when": [{"attr": "skate_spot", "set": true}, {"attr": "skate_session", "in": [0]}, {"attr": "skate_pick", "in": [0]}]},
+      {"id": "go_plattan", "label": "PLATTAN", "command": "plattan", "right": 640, "up": 560, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_ralis", "label": "RÅLIS", "command": "ralis", "right": 340, "up": 560, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_fryshuset", "label": "FRYSHUSET", "command": "fryshuset", "right": 40, "up": 560, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_ovningsplanen", "label": "PLAZA", "command": "ovningsplanen", "right": 640, "up": 430, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_bjorns", "label": "BOWLS", "command": "bjorns", "right": 340, "up": 430, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_spots", "label": "BACK", "command": "spots", "right": 40, "up": 430, "when": {"attr": "skate_pick", "eq": 1}},
       {"id": "feel1", "label": "1", "command": "feel 1", "right": 710, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
       {"id": "feel2", "label": "2", "command": "feel 2", "right": 540, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
       {"id": "feel3", "label": "3", "command": "feel 3", "right": 370, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
@@ -40,6 +52,13 @@
       {"id": "feel5", "label": "5", "command": "feel 5", "right": 30, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]}
     ]},
     "tablet": {"buttons": [
+      {"id": "session", "label": "SESSION", "icon": "session", "command": "session", "right": 40, "up": 300, "when": [{"attr": "skate_spot", "set": true}, {"attr": "skate_session", "in": [0]}, {"attr": "skate_pick", "in": [0]}]},
+      {"id": "go_plattan", "label": "PLATTAN", "command": "plattan", "right": 640, "up": 560, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_ralis", "label": "RÅLIS", "command": "ralis", "right": 340, "up": 560, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_fryshuset", "label": "FRYSHUSET", "command": "fryshuset", "right": 40, "up": 560, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_ovningsplanen", "label": "PLAZA", "command": "ovningsplanen", "right": 640, "up": 430, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_bjorns", "label": "BOWLS", "command": "bjorns", "right": 340, "up": 430, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_spots", "label": "BACK", "command": "spots", "right": 40, "up": 430, "when": {"attr": "skate_pick", "eq": 1}},
       {"id": "feel1", "label": "1", "command": "feel 1", "right": 710, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
       {"id": "feel2", "label": "2", "command": "feel 2", "right": 540, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
       {"id": "feel3", "label": "3", "command": "feel 3", "right": 370, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
@@ -47,6 +66,13 @@
       {"id": "feel5", "label": "5", "command": "feel 5", "right": 30, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]}
     ]},
     "desk": {"buttons": [
+      {"id": "session", "label": "SESSION", "icon": "session", "command": "session", "right": 40, "up": 300, "when": [{"attr": "skate_spot", "set": true}, {"attr": "skate_session", "in": [0]}, {"attr": "skate_pick", "in": [0]}]},
+      {"id": "go_plattan", "label": "PLATTAN", "command": "plattan", "right": 640, "up": 560, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_ralis", "label": "RÅLIS", "command": "ralis", "right": 340, "up": 560, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_fryshuset", "label": "FRYSHUSET", "command": "fryshuset", "right": 40, "up": 560, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_ovningsplanen", "label": "PLAZA", "command": "ovningsplanen", "right": 640, "up": 430, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_bjorns", "label": "BOWLS", "command": "bjorns", "right": 340, "up": 430, "when": {"attr": "skate_pick", "eq": 1}},
+      {"id": "go_spots", "label": "BACK", "command": "spots", "right": 40, "up": 430, "when": {"attr": "skate_pick", "eq": 1}},
       {"id": "feel1", "label": "1", "command": "feel 1", "right": 710, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
       {"id": "feel2", "label": "2", "command": "feel 2", "right": 540, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},
       {"id": "feel3", "label": "3", "command": "feel 3", "right": 370, "up": 430, "when": [{"attr": "skate_feel", "eq": 1}, {"attr": "skate_session", "in": [0]}]},

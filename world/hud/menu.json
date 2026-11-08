@@ -12,6 +12,8 @@
   "in_game": {
     "items": [
       {"id": "continue", "label": "Continue", "do": "continue"},
+      {"id": "spots", "label": "Spots", "cmd": "spots"},
+      {"id": "scoreboard", "label": "Scoreboard", "cmd": "scoreboard"},
       {"id": "exit", "label": "Exit to main menu", "do": "exit"},
       {"id": "style", "label": "Arcade / realistic", "cmd": "style"},
       {"id": "stance", "label": "Regular / goofy", "cmd": "stance"},

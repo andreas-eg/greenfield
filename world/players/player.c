@@ -29,13 +29,15 @@ void login() {
     }
     // A reconnect never resumes a session or a line; the bests stay.
     set_attr(this_player(), "skate_session", 0);
+    set_attr(this_player(), "skate_pick", 0);
+    set_attr(this_player(), "skate_card_beats", 0);
     set_attr(this_player(), "skate_line", 0);
     set_attr(this_player(), "skate_mult", 10);
     set_attr(this_player(), "riding", 0);
     foreach (string a : ({ "skate_style", "skate_stance", "skate_difficulty", "skate_score", "skate_line", "skate_mult",
                     "skate_trick", "skate_flash", "skate_bail", "skate_session", "skate_session_score",
                     "skate_session_left", "skate_result", "skate_record", "skate_best", "skate_spot",
-                    "skate_landing", "riding", "skate_board" }))
+                    "skate_landing", "riding", "skate_board", "skate_card_text", "skate_card_beats", "skate_pick" }))
         show_attr(a);
     // Every visit starts at the spot's start, facing its first line: a new player arrived
     // where the room's middle is, which at Plattan faced the buildings.
@@ -57,6 +59,8 @@ void heart_beat() {
     else set_attr(this_player(), "skate_spot", 0);
     said = skate_session_tick(this_player());
     if (said != "") write(said);
+    // The scoreboard's card stays a few beats, then goes (SODER-LENS-S289).
+    if (query_attr(this_player(), "skate_card_beats") > 0) add_attr(this_player(), "skate_card_beats", -1);
 }
 
 int command(string verb, string args) {
@@ -196,6 +200,23 @@ int command(string verb, string args) {
         write(skate_session_start(this_player()));
         return 1;
     }
+    // The cog's Scoreboard: the spot's best sessions as a card in the middle of the screen
+    // for eight seconds, not a line in the corner (SODER-LENS-S289).
+    if (verb == "scoreboard") {
+        room = query_attr(this_player(), "skate_spot");
+        b = room ? find_placed(room, "scoreboard") : 0;
+        words = b ? b->do_read() : "Scoreboards are at the spots.";
+        set_attr(this_player(), "skate_card_text", words);
+        set_attr(this_player(), "skate_card_beats", 4);
+        write(words);
+        return 1;
+    }
+    // The cog's Spots: the spots as buttons on the glass, a tap rides there; `spots` again
+    // puts them away. A phone cannot type a spot's name (SODER-BUG-634).
+    if (verb == "spots") {
+        set_attr(this_player(), "skate_pick", query_attr(this_player(), "skate_pick") == 1 ? 0 : 1);
+        return 1;
+    }
     if (verb == "score") {
         write("Score " + query_attr(this_player(), "skate_score") + ", best line " + query_attr(this_player(), "skate_best_line") + ".");
         return 1;
@@ -211,6 +232,7 @@ int command(string verb, string args) {
     // goes, and steps onto one of the next spot's: the boards belong to their spots.
     if ((!args || args == "") && member(skate_spots(), verb) >= 0) {
         start = skate_start(verb);
+        set_attr(this_player(), "skate_pick", 0);
         if (query_attr(this_player(), "skate_session") == 1 || query_attr(this_player(), "skate_session") == 2) set_attr(this_player(), "skate_session", 0);
         kept = query_attr(this_player(), "riding") == "skateboard";
         if (kept) do_command("exit");

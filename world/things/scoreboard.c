@@ -9,7 +9,8 @@ void create() {
     set_look("none");
     shown = "Nobody has skated a session here yet.";
     set_long(shown);
-    add_verb("read", "Read the scoreboard", "look", 40.0);
+    // Read from the cog (MENU, "Scoreboard"), shown as a card: not a button in the world
+    // (SODER-LENS-S289).
 }
 
 // From the soul when a session ends.
