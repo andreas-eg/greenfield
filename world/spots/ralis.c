@@ -5,7 +5,7 @@
 // lens's sk8 (GF-REQ-LENS-1). The other spots are a ride away: say a spot's name (players/player.c).
 void create() {
     set_title("Rålis, Rålambshovsparken");
-    set_description("The concrete park in Rålambshovsparken, by the water at the end of Norr Mälarstrand: a deep bowl, a mini ramp, a pyramid with a rail down its face, a hubba and a run of ledges, with the park's grass all round.");
+    set_description("The concrete park in Rålambshovsparken, by the water at the end of Norr Mälarstrand: a deep bowl, a mini ramp, a pyramid with a rail down its face, a hubba, a run of ledges and banks up to a deck on every side, with the park's grass all round.");
     set_chart("ralis");
     set_area(-40.0, -30.0, 40.0, 30.0);
     add_item("bowl", "Two and a half metres of floor, a deep wall all round and pool coping on top.");
@@ -16,6 +16,8 @@ void reset() {
     place_object("vehicles/skateboard.c", "board_1", "world", 1.0, 1.0, 0.0);
     place_object("vehicles/skateboard.c", "board_2", "world", -2.0, 2.5, 45.0);
     place_object("vehicles/skateboard.c", "board_3", "world", 3.0, -1.0, 270.0);
+    // The scooter beside the start (SODER-LENS-S291).
+    place_object("vehicles/scooter.c", "scooter_1", "world", -1.3, 0.0, 90.0);
     place_object("things/session.c", "session", "world", 2.5, 2.0, 0.0);
     place_object("things/scoreboard.c", "scoreboard", "world", 1.5, 2.0, 0.0);
 }

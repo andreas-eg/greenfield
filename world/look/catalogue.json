@@ -112,6 +112,7 @@
   },
   "mounts": {
     "door": "sth_door",
+    "scooter": "sth_scooter",
     "skateboard": "sth_skateboard",
     "walking_castle": "sth_walking_castle"
   }

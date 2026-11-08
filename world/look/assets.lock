@@ -50,6 +50,10 @@
    "sha256": "3210a52899d343c4c7e226de9ac7f945937fe1fcc2afd13c3a641e400b8beb79",
    "size": 8200
   },
+  "kit/urban/sth_scooter.glb": {
+   "sha256": "3c9dfd6caaca89df046ba5a546d28cedf2e43d2aa8f3582216241b1662aa1743",
+   "size": 19552
+  },
   "kit/urban/sth_skateboard.glb": {
    "sha256": "115ab48b21e341ad8bdecc46b043514659704eaeb0229e967932a63baa7f5d79",
    "size": 37540

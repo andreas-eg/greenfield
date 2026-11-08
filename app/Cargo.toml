@@ -16,7 +16,7 @@ name = "beargarden"
 path = "src/main.rs"
 
 [dependencies]
-lens-app = { git = "ssh://git@github.com/eldergrounds/lens.git", rev = "45f307db8908751c366d6043c05b28bafb4d85a0" }
+lens-app = { git = "ssh://git@github.com/eldergrounds/lens.git", rev = "c2ec20a19c068b7e2b2ac30549ccf13d2e94aecd" }
 lens-sk8 = { path = "../lens-sk8" }
 
 # As the lens builds itself: a debug build plays at the display's rate only with the

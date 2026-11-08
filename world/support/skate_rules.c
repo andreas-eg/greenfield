@@ -39,8 +39,21 @@ mapping skate_values() {
         "Boardslide": 200, "Lipslide": 200, "Noseslide": 300, "Tailslide": 300,
         "Crooked": 450, "Overcrook": 450, "Smith": 450, "Feeble": 450, "Salad": 450, "Willy": 450,
         "Bluntslide": 600, "Noseblunt": 600, "Darkslide": 700, "Powerslide": 50, "Revert": 50,
-        "Stall": 100, "Handplant": 500, "Air": 0
+        "Stall": 100, "Handplant": 500, "Air": 0,
+        // The scooter's names for the same tricks (SODER-LENS-S291, sk8 scooter_name): a name
+        // holds the scooter key as it would the board's.
+        "Bunny Hop": 50, "Nose Hop": 70, "Tailwhip": 250, "Barspin": 150, "Double Whip": 800,
+        "Deckslide": 200
     ]);
+}
+
+// What a Beargarden skater rides: a board, or the scooter (SODER-LENS-S291); 0 on foot.
+// @req SODER-LENS-S291
+string skate_ride(object who) {
+    string r;
+    r = query_attr(who, "riding");
+    if (r == "skateboard" || r == "scooter") return r;
+    return 0;
 }
 
 // What one named trick can be worth at most: the best key it contains, plus what holding it
@@ -78,7 +91,7 @@ int skate_cap(string *names, float multiplier) {
 
 // Is `who` somewhere Beargarden scores: on one of its boards, in one of its spots?
 int skate_scoring(object who) {
-    if (query_attr(who, "riding") != "skateboard") return 0;
+    if (!skate_ride(who)) return 0;
     return query_attr(who, "skate_spot") != 0;
 }
 
@@ -143,13 +156,18 @@ int skate_session_beats() { return 60; }   // 60 world ticks of 2 s: two minutes
 
 // Onto the first free board of the spot the player is at; 1 when they are on one.
 // (Here so the session post's offer and the soul's `session` verb both board a skater.)
-int board_here() {
+int board_here() { return ride_here("skateboard"); }
+
+// Onto the first free board ("skateboard") or scooter ("scooter", SODER-LENS-S291) of this spot.
+int ride_here(string kind) {
     string room;
+    string id;
     object b;
     int n;
     room = query_room(this_player());
+    id = kind == "scooter" ? "scooter_" : "board_";
     for (n = 1; n <= 3; n++) {
-        b = find_placed(room, "board_" + n);
+        b = find_placed(room, id + n);
         if (b && b->is_free()) {
             // The board comes to the skater, not the skater to wherever it was left.
             b->put(query_x(this_player()), query_z(this_player()));
@@ -168,8 +186,9 @@ string skate_session_start(object who) {
     // Started on foot (the post's offer is there to anyone near it): onto a board first. The
     // board's own hook says riding a moment later; the session needs it now. Both ways in, the
     // post's offer and the soul's `session`, come here (the offer did not board, 2026-11-08).
-    if (query_attr(who, "riding") != "skateboard" && board_here()) set_attr(who, "riding", "skateboard");
-    if (query_attr(who, "riding") != "skateboard") return "Step on a board first.";
+    // On the scooter a session runs as on a board (SODER-LENS-S291).
+    if (!skate_ride(who) && board_here()) set_attr(who, "riding", "skateboard");
+    if (!skate_ride(who)) return "Step on a board first.";
     skate_line_end(who);
     set_attr(who, "skate_session", 1);
     set_attr(who, "skate_feel", 0);

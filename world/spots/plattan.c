@@ -5,9 +5,9 @@
 // lens's sk8 (GF-REQ-LENS-1). The other spots are a ride away: say a spot's name (players/player.c).
 void create() {
     set_title("Plattan, Sergels torg");
-    set_description("The sunken plaza under Sergels torg, black and white triangles to the edges, Kulturhuset's glass along one side and the upper level's wide stairs on the other. Skaters have owned it since the eighties; the granite benches are waxed smooth.");
+    set_description("The sunken plaza under Sergels torg, black and white triangles to the edges, Kulturhuset's glass along one side and the upper level's wide stairs on the other, and banks up to the street level all round. Skaters have owned it since the eighties; the granite benches are waxed smooth.");
     set_chart("plattan");
-    set_area(-32.0, -30.0, 32.0, 20.0);
+    set_area(-46.0, -30.0, 46.0, 34.0);
     add_item("stairs", "Twelve steps up to the upper level, three flights side by side, a handrail down each.");
     add_item("benches", "Low granite benches along the plaza's edge, their corners rounded by thirty years of grinding.");
 }
@@ -16,6 +16,8 @@ void reset() {
     place_object("vehicles/skateboard.c", "board_1", "world", 1.0, 8.5, 180.0);
     place_object("vehicles/skateboard.c", "board_2", "world", -3.0, 10.0, 200.0);
     place_object("vehicles/skateboard.c", "board_3", "world", 6.0, 6.0, 90.0);
+    // The scooter beside the start (SODER-LENS-S291).
+    place_object("vehicles/scooter.c", "scooter_1", "world", 6.2, 13.0, 270.0);
     place_object("things/session.c", "session", "world", 3.0, 9.5, 0.0);
     place_object("things/scoreboard.c", "scoreboard", "world", 1.5, 8.0, 0.0);
 }

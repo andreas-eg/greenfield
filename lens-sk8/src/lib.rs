@@ -14,12 +14,36 @@
 use lens_mode::{Attrs, Camera, Frame, Input, Mat, Registration, Ride, Spectator, Start};
 use sk8::input::{btn, VirtualController};
 use sk8::math::v3;
-use sk8::{Difficulty, Event, Sim, State, World};
+use sk8::{Difficulty, Event, Sim, State, Vehicle, World};
 use std::collections::{HashMap, HashSet};
 
 /// The mode as the lens is given it.
 pub fn registration() -> Registration {
     Registration { sim: "sk8", ride: start, spectator: spectator }
+}
+
+/// The scooter (Söder's electric Voi) as a mode of its own: the lens hands a mode where the
+/// ride starts but not the drive, so the drive's `sim` says which is ridden. Its spectator is
+/// the board's (`registration`), which already turns every rider's flips.
+/// @req SODER-LENS-S291
+pub const SCOOTER: &str = "sk8_scooter";
+
+pub fn scooter_registration() -> Registration {
+    Registration { sim: SCOOTER, ride: start, spectator: no_spectator }
+}
+
+fn no_spectator() -> Box<dyn Spectator> {
+    struct Nobody;
+    impl Spectator for Nobody {
+        fn heard(&mut self, _: &str, _: &Attrs, _: f32) {}
+        fn trick(&self, _: &str, _: f32) -> Option<Mat> {
+            None
+        }
+        fn body(&self, _: &str, _: &str, _: &str) -> Option<Mat> {
+            None
+        }
+    }
+    Box::new(Nobody)
 }
 
 fn start(s: &Start) -> Result<Box<dyn Ride>, String> {
@@ -119,6 +143,8 @@ struct Skate {
     /// thumb, from when it went down; and whether it was down last frame.
     ollie_t: Option<f32>,
     trick_was: bool,
+    /// A scooter, not a board (SODER-LENS-S291): its trick is drawn turning about up.
+    scooter: bool,
     /// The trick button pressed in the air and still held: a grab.
     grabbing: bool,
     /// The state last written to the record, and the time since its last sample.
@@ -193,7 +219,9 @@ impl Skate {
         let world = World::from_json(&text)?;
         // Stance and style are set by retune, below.
         let (_, difficulty, _) = settings(&s.attrs);
-        let sim = Sim::new(world, level(&difficulty));
+        let mut sim = Sim::new(world, level(&difficulty));
+        let scooter = s.sim == SCOOTER;
+        sim.set_vehicle(if scooter { Vehicle::Scooter } else { Vehicle::Board });
         let f = sk8::Frame::of(&sim);
         let mut k = Skate {
             sim,
@@ -208,6 +236,7 @@ impl Skate {
             thumb: None,
             ollie_t: None,
             trick_was: false,
+            scooter,
             grabbing: false,
             logged_state: String::new(),
             sample_t: 0.0,
@@ -223,7 +252,7 @@ impl Skate {
         };
         k.retune(&s.attrs);
         k.place(s.at[0], s.at[1], s.at[2], s.yaw);
-        println!("  sk8: on the board at {}, ({:.1}, {:.1}), {}", s.chart, s.at[0], s.at[2], k.settings);
+        println!("  sk8: on the {} at {}, ({:.1}, {:.1}), {}", if scooter { "scooter" } else { "board" }, s.chart, s.at[0], s.at[2], k.settings);
         let mut f = here(&k.sim);
         f["chart"] = serde_json::json!(s.chart);
         f["settings"] = serde_json::json!(k.settings);
@@ -263,8 +292,9 @@ impl Skate {
     /// keys (WASD the left stick, W and Space push, S and C brake, the arrows the right stick
     /// (the flick), Z and G the triggers (grabs), H and Y a manual and a nose manual, T on and
     /// off the board, E the X button, Q and R the shoulders, Shift crouch), the mouse dragged,
-    /// and the glass: its stick and pedals (x steer, y +1 PUSH, -1 FOOT BRAKE), OLLIE (the
-    /// lens's TRICK), which flicks an ollie for the thumb, and the right thumb's drag.
+    /// and the glass: its stick and pedals (x steer; y forward the push, as hard as it is out,
+    /// SODER-LENS-S290; -1 FOOT BRAKE), OLLIE (the lens's TRICK), which flicks an ollie for the
+    /// thumb, and the right thumb's drag.
     fn sample(&mut self, i: &Input, dt: f32) -> VirtualController {
         if i.mouse != [0.0, 0.0] {
             self.mouse += glam::Vec2::new(i.mouse[0], -i.mouse[1]) / 120.0;
@@ -305,6 +335,11 @@ impl Skate {
         if self.mouse_rest > 0.03 {
             self.mouse = glam::Vec2::ZERO;
         }
+        // The glass stick forward is the push (a board) or the throttle (a scooter), as hard as
+        // it is out of a small dead zone; centred, none (SODER-LENS-S290). The keys and the pad
+        // push with their buttons, fully. @req SODER-LENS-S290
+        let stick = i.stick.unwrap_or_default();
+        self.sim.set_stick_push(if i.script_pad.is_some() { 0.0 } else { sk8::input::stick_push(stick[1]) });
         // A script's pad stands for the rest while it holds.
         if let Some(p) = &i.script_pad {
             let a = p.axes;
@@ -347,7 +382,6 @@ impl Skate {
         self.trick_was = trick;
         let flick = self.ollie_t.map(|t| if t < 0.07 { -1.0 } else { 1.0 });
         self.ollie_t = self.ollie_t.map(|t| t + dt).filter(|t| *t < 0.13);
-        let stick = i.stick.unwrap_or_default();
         let (ls, rs) = (i.pad.left, i.pad.right);
         let held = |b: &str| i.pad.held.iter().any(|h| h == b);
         let mut c = VirtualController {
@@ -361,8 +395,10 @@ impl Skate {
         };
         for (on, b) in [
             // W and S are the board's PUSH and FOOT BRAKE as the lens's hints say (the
-            // world's controls); they are the left stick's forward and back as well.
-            (held("South") || key("Space") || key("KeyW") || stick[1] > 0.5, btn::A),
+            // world's controls); they are the left stick's forward and back as well. The glass
+            // stick pushes through the stick push above; off the board it is A as before, to
+            // step back on.
+            (held("South") || key("Space") || key("KeyW") || (off && stick[1] > 0.5), btn::A),
             // S alone: with A or D it is the left stick back and to the side, the powerslide.
             (held("East") || key("KeyC") || (lx == 0.0 && key("KeyS")) || stick[1] < -0.5, btn::B),
             (held("West") || key("KeyE"), btn::X),
@@ -524,7 +560,7 @@ impl Ride for Skate {
             facing: fwd.to_array(),
             speed: p.speed,
             mount: board_matrix(p.pos - p.up * DECK_H, p.fwd, p.up).to_cols_array(),
-            trick: board_trick(&p).to_cols_array(),
+            trick: if self.scooter { scooter_trick(&p) } else { board_trick(&p) }.to_cols_array(),
             body: body.to_cols_array(),
             clip: p.clip.to_string(),
             clip_once: one_shot(p.clip),
@@ -615,6 +651,13 @@ fn board_trick(p: &Pose) -> glam::Mat4 {
         * glam::Mat4::from_rotation_x(p.flip)
         * glam::Mat4::from_rotation_z(p.pitch)
         * glam::Mat4::from_translation(-lift)
+}
+
+/// The scooter with its trick on it (SODER-LENS-S291): one mesh, so a tailwhip (the deck round
+/// the bars) and a barspin both turn the whole scooter about up, through the flip's and the
+/// shuvit's angles; a manual pitches it.
+fn scooter_trick(p: &Pose) -> glam::Mat4 {
+    glam::Mat4::from_rotation_y(-(p.flip + p.shuv)) * glam::Mat4::from_rotation_z(p.pitch)
 }
 
 /// Other riders as their realm shows them: their board flips (`skate_board`,
@@ -748,6 +791,47 @@ mod tests {
             events.extend(ride.events());
         }
         assert!(events.iter().any(|(k, _)| k == "sk8_run_out"), "{events:?}");
+    }
+
+    /// Two seconds on Plattan from its start with this input, held: the speed.
+    fn rolled(start_as: &Start, input: &Input) -> f32 {
+        let mut ride = start(start_as).unwrap();
+        let mut f = ride.step(1.0 / 60.0, input);
+        for _ in 0..240 {
+            f = ride.step(1.0 / 60.0, input);
+        }
+        f.speed
+    }
+
+    // @req SODER-LENS-S290  The glass stick's forward reaches sk8 as the push, as hard as it is out.
+    #[test]
+    fn the_glass_sticks_forward_is_the_push() {
+        let glass = |y: f32| Input { stick: Some([0.0, y]), ..Input::default() };
+        let (none, light, full) = (rolled(&plattan(), &glass(0.0)), rolled(&plattan(), &glass(0.4)), rolled(&plattan(), &glass(1.0)));
+        assert!(none < 0.05, "centred: {none}");
+        assert!(light > 0.5 && light + 0.5 < full, "light {light}, full {full}");
+        // W still pushes fully, as the full stick does.
+        let w = rolled(&plattan(), &Input { keys: vec!["KeyW".into()], ..Input::default() });
+        assert!((w - full).abs() < 1.0, "W {w}, full stick {full}");
+        // The FOOT BRAKE pedal is still the brake: no push.
+        assert!(rolled(&plattan(), &glass(-1.0)) < 0.05);
+    }
+
+    // @req SODER-LENS-S291  A drive whose sim is sk8_scooter rides as the scooter: its motor, its trick names.
+    #[test]
+    fn a_scooter_rides_on_its_throttle() {
+        let m = lens_mode::find(&[registration(), scooter_registration()], SCOOTER).copied().expect("registered as sk8_scooter");
+        let mut s = plattan();
+        s.sim = SCOOTER.into();
+        let mut ride = (m.ride)(&s).expect("plattan has a skate file");
+        let glass = Input { stick: Some([0.0, 1.0]), ..Input::default() };
+        let mut f = ride.step(1.0 / 60.0, &glass);
+        for _ in 0..120 {
+            f = ride.step(1.0 / 60.0, &glass);
+        }
+        assert!(f.speed > 1.0, "two seconds of throttle: {} m/s", f.speed);
+        assert_ne!(f.clip, "skate_push", "a motor, not a push");
+        assert!(rolled(&s, &Input::default()) < 0.05, "no throttle, no roll");
     }
 
     #[test]

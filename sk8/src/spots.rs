@@ -9,7 +9,7 @@ use crate::world::{RailKind, RailMaterial, SpotFile, Surface};
 
 /// Övningsplanen: the test plaza on the green field. A bank, a 0.45 m ledge, a flat rail,
 /// a quarter-pipe with coping, a 2.4 m bowl, a manual pad, a curb, a stair set with a
-/// handrail, and a long 10 degree hill for the coasting test.
+/// handrail, a long 10 degree hill for the coasting test, and banks up to a deck all round.
 pub fn ovningsplanen() -> SpotFile {
     let mut b = Builder::new();
     let s = Surface::Smooth;
@@ -33,8 +33,9 @@ pub fn ovningsplanen() -> SpotFile {
     // The hill: 10 deg, 60 m long, falling north along x = 32.
     let h = 60.0 * deg(10.0).tan();
     b.quad(s, v3(28.0, h, -38.0), v3(36.0, h, -38.0), v3(36.0, 0.0, 22.0), v3(28.0, 0.0, 22.0), UP);
-    // The green field round the plaza, so riding off the concrete is grass, not the edge.
-    grass_round(&mut b, 40.0, 40.0, 70.0);
+    // Banks up to a deck all round the 80 m concrete, then the green field, so riding off the
+    // concrete is grass, not the edge.
+    platforms(&mut b, s, 40.0, 40.0);
     b.mark("start", v3(0.0, 0.0, 0.0), 0.0);
     b.mark("hill_top", v3(32.0, h, -36.0), 0.0);
     b.mark("bowl_deck", v3(-24.0, 0.0, -17.2), 0.0);
@@ -44,16 +45,28 @@ pub fn ovningsplanen() -> SpotFile {
 
 /// Plattan, Sergels torg: the sunken plaza with its triangle paving, the stairs up to the
 /// upper level with their handrails, and the granite benches along the edges. Stockholm's
-/// street spot since the eighties.
+/// street spot since the eighties. The street level round the sunken plaza is a deck 1.2 m
+/// up, banks running up to it on the west, north and east, joined to the upper level.
 pub fn plattan() -> SpotFile {
     let mut b = Builder::new();
     let s = Surface::Smooth;
-    // The plaza floor (the black-and-white paving), 64 by 40 m, and the street level
-    // round it to the buildings.
+    // The plaza floor (the black-and-white paving), 64 by 40 m.
     b.ground(s, -32.0, -22.0, 32.0, 20.0, 0.0);
-    b.ground(Surface::Rough, -46.0, 20.0, 46.0, 34.0, 0.0);
-    b.ground(Surface::Rough, -46.0, -30.0, -32.0, 20.0, 0.0);
-    b.ground(Surface::Rough, 32.0, -30.0, 46.0, 20.0, 0.0);
+    // The street level round it to the buildings, 1.2 m up: banks rise to it from the plaza's
+    // west, north and east edges over 7 m (9.7 deg), then a 7 m deck to the buildings, so a
+    // rider can roll up at cruising speed, turn on the deck, ride along it and drop back in.
+    // The banks meet in mitred corners and the deck runs round both north corners.
+    // @req SODER-LENS-S292
+    b.bank_ring(s, (-32.0, -22.0, 32.0, 20.0), 0.0, 7.0, 1.2, 7.0, [true, true, false, true]);
+    // South of the side decks, beside the upper level, the deck carries on to the south
+    // buildings, and a 6 m bank (11 deg) climbs the last 1.2 m onto the upper level: the
+    // platforms go all the way round, the upper level their south side.
+    for sx in [-1.0f32, 1.0] {
+        b.block(s, sx * 39.0, -26.0, 0.0, 14.0, 8.0, 1.2, 0.0);
+        let (lo, hi) = (sx * 38.0, sx * 32.0);
+        b.quad(s, v3(lo, 1.2, -30.0), v3(lo, 1.2, -22.0), v3(hi, 2.4, -22.0), v3(hi, 2.4, -30.0), UP);
+        b.tri(s, v3(lo, 1.2, -22.0), v3(hi, 2.4, -22.0), v3(hi, 1.2, -22.0), v3(0.0, 0.0, 1.0));
+    }
     // The buildings that close the square: Drottninggatan's corner to the north, the
     // blocks to the east and west.
     for (x, z, w, d) in [(0.0, 38.0, 92.0, 8.0), (-50.0, 0.0, 8.0, 84.0), (50.0, 0.0, 8.0, 84.0), (0.0, -34.0, 108.0, 8.0)] {
@@ -84,14 +97,15 @@ pub fn plattan() -> SpotFile {
 }
 
 /// Rålis, the concrete park in Rålambshovsparken: a bowl, a mini ramp, banks, a hubba, a
-/// pyramid with a rail, ledges and flat rails, with the park's grass round it.
+/// pyramid with a rail, ledges and flat rails, banks up to a deck all round the concrete, and
+/// the park's grass round it.
 pub fn ralis() -> SpotFile {
     let mut b = Builder::new();
     let c = Surface::Smooth;
     let hole = b.bowl(c, -14.0, 0.0, 0.0, 2.5, 2.2, 0.4, 6.5);
     b.ground_around(c, (-22.0, -16.0, 22.0, 16.0), hole, 0.0);
-    // Grass round the concrete, the park's.
-    grass_round(&mut b, 22.0, 16.0, 70.0);
+    // Banks up to a deck round the 44 by 32 m concrete, then the park's grass.
+    platforms(&mut b, c, 22.0, 16.0);
     // Mini ramp: two 1.6 m quarters facing each other over 5 m of flat.
     b.quarter_pipe(c, 4.0, -9.5, 0.0, 6.0, 1.6, 0.0, 1.5, std::f32::consts::PI);
     b.quarter_pipe(c, 4.0, -4.5, 0.0, 6.0, 1.6, 0.0, 1.5, 0.0);
@@ -176,6 +190,20 @@ pub fn bjorns() -> SpotFile {
     b.mark("start", start, std::f32::consts::PI);
     b.mark("ovals", v3(14.8, 0.0, 0.0), -std::f32::consts::FRAC_PI_2);
     b.finish("bjorns", "Björns trädgård", start, std::f32::consts::PI)
+}
+
+/// Banks up to a deck all round the concrete from -hw..hw by -hd..hd: 1.2 m up over 7 m
+/// (9.7 deg, a roll up at cruising speed), a deck 5 m deep to turn on and ride along, a
+/// 0.9 m parapet on its outer edge, and the grass and fence beyond (`grass_round`).
+/// @req SODER-LENS-S292
+fn platforms(b: &mut Builder, s: Surface, hw: f32, hd: f32) {
+    let (x0, z0, x1, z1) = b.bank_ring(s, (-hw, -hd, hw, hd), 0.0, 7.0, 1.2, 5.0, [true; 4]);
+    let (t, h) = (0.3, 1.2 + 0.9);
+    let (w, d) = (x1 - x0 + 2.0 * t, z1 - z0 + 2.0 * t);
+    for (x, z, bw, bd) in [(0.0, z1 + t * 0.5, w, t), (0.0, z0 - t * 0.5, w, t), (x0 - t * 0.5, 0.0, t, d), (x1 + t * 0.5, 0.0, t, d)] {
+        b.block(Surface::Unrideable, x, z, 0.0, bw, bd, h, 0.0);
+    }
+    grass_round(b, x1 + t, z1 + t, 70.0);
 }
 
 /// Grass from a hw x hd rectangle round the middle out to `out` metres each way, and a
