@@ -393,6 +393,9 @@ impl Skate {
             self.pending.drain(..self.pending.len() - keep);
         }
         let ticks = self.sim.advance(dt, &self.pending);
+        // The record's half-second clock runs on every frame's time: counted only on frames
+        // that ticked, a lens at 660 fps sampled the ride every five seconds or so.
+        self.sample_t += dt;
         if ticks == 0 {
             return;
         }
@@ -404,7 +407,6 @@ impl Skate {
             self.log("state", here(&self.sim));
             self.logged_state = now;
         }
-        self.sample_t += dt;
         if self.sample_t >= 0.5 {
             self.sample_t = 0.0;
             self.log("sample", here(&self.sim));
