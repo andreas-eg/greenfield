@@ -88,3 +88,25 @@ Still open on the phone:
   the start.
 
 Still open: world lines (the reply to a tap) do not show on the phone.
+
+## 2026-11-08, the city spike: Björns trädgård to Medborgarplatsen from GeoGen's island
+
+A box of the real island (x 165..315, z 160..310, island 67) as a spot, `medborgarplatsen`, made by
+`tools/city_spot.py` and ridden with sk8 on the desk (SODER-LENS-S272). Regenerate with:
+
+    python3 tools/city_spot.py ~/.soder/islands/soder-67 ~/src/eg/soder/world sk8/spots/medborgarplatsen.json
+    cd sk8 && cargo run --release --bin spots -- ../world/charts ../conditioned/beargarden
+
+| Tried | What happened | Done |
+|---|---|---|
+| The island's ground, clipped to the box | 75 k triangles; the lens drew a slab of grass in the air and nothing else | The lens merges a mesh's primitives under one u16 index base (SODER-BUG-628): the spot builder writes a big spot as several meshes |
+| Riding north from the Medborgarplatsen side | Fell through the ground in front of the terrace wall | Walls and structures GeoGen draws as their own meshes leave no ground under them: the edges' walls go in as walls, and every 1 m cell without ground as a solid block (3 817 cells, most of them under houses) |
+| The start on GeoGen's own skate spot | A push did not get going: the spot is on the lawn | The start is the first smooth ground ahead of it, on the deck |
+| The surfaces | Nearly everything outside the park read as lawn | GeoGen's `yard` is made ground (courtyards, an untagged square such as Medborgarplatsen), now rough, not slow |
+| The bowls | Rideable: dropped in 2.3 m and rode 15.6 m across, no bail (headless); live, in and out, and the coping locks into BS and FS bluntslides | GeoGen's bowls are deeper than the hand-built spot's: 2.15, 1.46 and 1.45 m against 1.35, 1.10 and 1.25 (guessed lips and floors) |
+| A ride from the bowls to the square | About three minutes live across the bowls, the coping, the lawns and the houses with no fall through the world (sk8.jsonl, three runs) and no ride off the box (16 headings from the start and from the square, tests/spots.rs); but no line on the board from the park to the square | A band of lawn 16 to 20 m wide and the terrace's stairs lie between them, and GeoGen has the park's paths only as lawn: the last stretch is a walk |
+
+What it says for the whole island (streamed tiles): the ground holds a board and the bowls ride,
+but it is drawn for looking. Before tiles: GeoGen paths through parks (surveyed, not lawn), the
+structures' footprints as ground or solids in the ground mesh itself, kerbs as edges with a height
+(GF-REQ-GEOGEN-1), and bowl depths from a survey rather than a guess.
