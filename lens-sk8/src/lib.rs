@@ -62,6 +62,12 @@ const TUNING: &str = "skate/tuning.txt";
 pub const DECK_H: f32 = 0.075;
 pub const DECK_TOP: f32 = 0.11;
 
+/// On the scooter the rider stands where Söder's scooter puts its rider: its `saddle` socket
+/// (sth_scooter.glb, x 0.04 behind the bars, the hips 1.066 m up), feet on its deck 0.15 m up,
+/// facing forward with hands on the bars in Söder's own clip (SODER-LENS-S351).
+const SCOOTER_FEET: glam::Vec3 = glam::Vec3::new(0.04, 0.15, 0.0);
+pub const SCOOTER_CLIP: &str = "scooter_coast";
+
 /// The skate clips the bodies carry (tools/skate_clips.py), for each clip sk8 names
 /// (sk8::frame::CLIPS). One clip stands for several where the authored set has one.
 pub fn body_clip(sk8: &str) -> &'static str {
@@ -542,13 +548,19 @@ impl Ride for Skate {
         let sample = self.sample(input, dt);
         self.advance(dt * time_scale(), &[sample]);
         let p = self.pose();
-        self.tell_clip(p.clip, dt);
+        // On the scooter Söder's riding pose, through hops and grinds too: a skate clip turns
+        // the hips sideways to a board. A bail and walking keep theirs (SODER-LENS-S351).
+        // @req SODER-LENS-S351
+        let clip = if self.scooter && p.on_board { SCOOTER_CLIP } else { p.clip };
+        self.tell_clip(clip, dt);
         // On the board the way it points; off it (a bail, walking) the way the rider moves.
         let fwd = if p.on_board { p.fwd } else { self.last_rider.map_or(p.fwd, |l| (p.rider - l).with_y(0.0).normalize_or(p.fwd)) };
         self.last_rider = Some(p.rider);
         // On the board the feet are on the deck, the regular rider's left foot to the nose
         // (the clips are authored so), turned round for goofy; off it, where sk8 has the body.
-        let body = if p.on_board {
+        let body = if p.on_board && self.scooter {
+            board_matrix(p.pos - p.up * DECK_H, p.fwd, p.up) * glam::Mat4::from_translation(SCOOTER_FEET)
+        } else if p.on_board {
             let stance = if p.goofy { glam::Mat4::from_rotation_y(std::f32::consts::PI) } else { glam::Mat4::IDENTITY };
             board_matrix(p.pos + p.up * (DECK_TOP - DECK_H), p.fwd, p.up) * stance
         } else {
@@ -562,8 +574,8 @@ impl Ride for Skate {
             mount: board_matrix(p.pos - p.up * DECK_H, p.fwd, p.up).to_cols_array(),
             trick: if self.scooter { scooter_trick(&p) } else { board_trick(&p) }.to_cols_array(),
             body: body.to_cols_array(),
-            clip: p.clip.to_string(),
-            clip_once: one_shot(p.clip),
+            clip: clip.to_string(),
+            clip_once: one_shot(clip),
             camera: Some(self.camera()),
             // Rolling, the world's offers would cover the line ahead: only getting off stays.
             hide_offers: self.sim.p.vel.len() > 0.7,
@@ -832,6 +844,29 @@ mod tests {
         assert!(f.speed > 1.0, "two seconds of throttle: {} m/s", f.speed);
         assert_ne!(f.clip, "skate_push", "a motor, not a push");
         assert!(rolled(&s, &Input::default()) < 0.05, "no throttle, no roll");
+    }
+
+    // @req SODER-LENS-S351  On the scooter the rider stands forward at the bars in Söder's clip.
+    #[test]
+    fn a_scooter_rider_stands_forward_at_the_bars() {
+        let m = lens_mode::find(&[registration(), scooter_registration()], SCOOTER).copied().unwrap();
+        let mut s = plattan();
+        s.sim = SCOOTER.into();
+        s.attrs.insert("skate_stance".into(), "goofy".into());
+        let mut ride = (m.ride)(&s).unwrap();
+        let glass = Input { stick: Some([0.0, 1.0]), ..Input::default() };
+        let mut f = ride.step(1.0 / 60.0, &glass);
+        for _ in 0..60 {
+            f = ride.step(1.0 / 60.0, &glass);
+        }
+        assert_eq!(f.clip, SCOOTER_CLIP);
+        let (mount, body) = (glam::Mat4::from_cols_array(&f.mount), glam::Mat4::from_cols_array(&f.body));
+        // The body's frame is the scooter's, no goofy turn, its feet on the deck behind the bars.
+        for v in [glam::Vec3::X, glam::Vec3::Z] {
+            assert!((body.transform_vector3(v) - mount.transform_vector3(v)).length() < 1e-4, "turned from the scooter: {v}");
+        }
+        let feet = mount.inverse().transform_point3(body.transform_point3(glam::Vec3::ZERO));
+        assert!((feet - SCOOTER_FEET).length() < 1e-4, "feet at {feet}");
     }
 
     #[test]
