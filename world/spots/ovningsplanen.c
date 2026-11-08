@@ -16,6 +16,8 @@ void reset() {
     place_object("vehicles/skateboard.c", "board_1", "world", 1.0, 0.5, 0.0);
     place_object("vehicles/skateboard.c", "board_2", "world", -1.5, 1.0, 30.0);
     place_object("vehicles/skateboard.c", "board_3", "world", 2.5, -1.0, 300.0);
+    // The scooter beside the start (SODER-LENS-S291).
+    place_object("vehicles/scooter.c", "scooter_1", "world", -1.3, -0.5, 90.0);
     place_object("things/session.c", "session", "world", 2.5, 2.0, 0.0);
     place_object("things/scoreboard.c", "scoreboard", "world", 1.5, 2.0, 0.0);
 }

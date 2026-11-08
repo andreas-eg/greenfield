@@ -90,6 +90,12 @@ tuning! {
     push_clip: 0.65, 0.65, 0.65;
     push_contact: 0.25, 0.25, 0.25;
     auto_push: 1.0, 1.0, 0.0;
+    /// The longest pause between pushes, at the lightest push on the glass stick; none at a
+    /// full one (SODER-LENS-S290).
+    push_rest: 0.6, 0.6, 0.6;
+    // The scooter (SODER-LENS-S291): Söder's Voi cruises at 11.1 m/s on its throttle.
+    scooter_cruise: 11.0, 11.0, 11.0;
+    scooter_accel: 3.0, 3.0, 3.0;
     // Steer (B.6.3)
     yaw_rate_max: 2.4, 2.4, 2.4;
     grip_base: 12.0, 12.0, 12.0;

@@ -25,6 +25,6 @@ pub mod world;
 
 pub use frame::Frame;
 pub use input::VirtualController;
-pub use sim::{Event, Sim, State};
+pub use sim::{Event, Sim, State, Vehicle};
 pub use tuning::{Difficulty, Tuning};
 pub use world::World;

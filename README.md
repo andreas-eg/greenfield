@@ -96,7 +96,12 @@ SESSION puts you on a board and starts the clock. On a board:
 - The arrows are the right stick: down then up is an ollie, curved for flips.
 - H holds a manual, S with A or D powerslides, Z and G grab.
 - T brings the board back after a run-out, and F steps off.
-- On glass: PUSH, FOOT BRAKE and OLLIE; the right thumb flicks; OLLIE again in the air grabs.
+- On glass: the left stick forward pushes, harder and more often the further it is out
+  (SODER-LENS-S290; until the lens passes the stick's forward while riding, the PUSH pedal is
+  a full stick), FOOT BRAKE and OLLIE; the right thumb flicks; OLLIE again in the air grabs.
+- Each spot has a scooter beside its start (Söder's electric Voi, SODER-LENS-S291): GET ON it
+  and the stick (or W, or THROTTLE) is the throttle, to about 11 m/s; the board's gestures are
+  a bunny hop, tailwhips and barspins, and grinds and manuals work as on the board.
 - A pad works as in the spec.
 - `LENS_SK8_TIMESCALE=0.25` slows the board down to look at a trick.
 - The world also takes `skater <name>`, `style realistic`, `stance goofy` and a spot's name.
