@@ -5,9 +5,9 @@
 // lens's sk8 (GF-REQ-LENS-1). The other spots are a ride away: say a spot's name (players/player.c).
 void create() {
     set_title("Plattan, Sergels torg");
-    set_description("The sunken plaza under Sergels torg, black and white triangles to the edges, Kulturhuset's glass along one side and the upper level's wide stairs on the other. Skaters have owned it since the eighties; the granite benches are waxed smooth.");
+    set_description("The sunken plaza under Sergels torg, black and white triangles to the edges, Kulturhuset's glass along one side and the upper level's wide stairs on the other, and banks up to the street level all round. Skaters have owned it since the eighties; the granite benches are waxed smooth.");
     set_chart("plattan");
-    set_area(-32.0, -30.0, 32.0, 20.0);
+    set_area(-46.0, -30.0, 46.0, 34.0);
     add_item("stairs", "Twelve steps up to the upper level, three flights side by side, a handrail down each.");
     add_item("benches", "Low granite benches along the plaza's edge, their corners rounded by thirty years of grinding.");
 }

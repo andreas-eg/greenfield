@@ -145,6 +145,53 @@ impl Builder {
         self.rail(RailKind::Ledge, RailMaterial::Concrete, &[d0, d1], false);
     }
 
+    /// Banks up to raised decks round a rectangle of floor (x0, z0) to (x1, z1) at y0: each
+    /// side a bank rising `h` over `run` metres outward, then a level deck `deck` metres deep,
+    /// then a wall down to y0 at its outer edge. `sides` says which sides have one, in the
+    /// order north (+z), east (+x), south (-z), west (-x). Where two neighbouring sides both
+    /// have one the banks meet in a mitred inside corner and the decks join, so a rider can
+    /// ride the deck round the corner; a side whose neighbour has none ends square, with a
+    /// wall, on the floor's edge line. Returns the outer rectangle (x0, z0, x1, z1).
+    /// @req SODER-LENS-S292: the street spots' banks up to platforms round the sides.
+    pub fn bank_ring(&mut self, s: Surface, rect: (f32, f32, f32, f32), y0: f32, run: f32, h: f32, deck: f32, sides: [bool; 4]) -> (f32, f32, f32, f32) {
+        let (x0, z0, x1, z1) = rect;
+        let c = v3((x0 + x1) * 0.5, y0, (z0 + z1) * 0.5);
+        let (hx, hz) = ((x1 - x0) * 0.5, (z1 - z0) * 0.5);
+        let y1 = y0 + h;
+        let far = run + deck;
+        // Per side: outward normal, tangent, half depth to the edge, half length along it,
+        // the sides at its -tangent and +tangent ends, and whether its deck takes the corners.
+        let x = v3(1.0, 0.0, 0.0);
+        let z = v3(0.0, 0.0, 1.0);
+        let frame = [(z, x, hz, hx, 3, 1, true), (x, z, hx, hz, 2, 0, false), (-z, x, hz, hx, 3, 1, true), (-x, z, hx, hz, 2, 0, false)];
+        for (k, &(n, t, hn, ht, lo, hi, corners)) in frame.iter().enumerate() {
+            if !sides[k] {
+                continue;
+            }
+            let p = |a: f32, d: f32, y: f32| c + n * (hn + d) + t * a + UP * (y - y0);
+            let nb = [sides[lo], sides[hi]];
+            let sgn = [-1.0f32, 1.0];
+            // The bank, its outer edge reaching into the corner where the neighbour has one.
+            let ext = |e: usize, by: f32| if nb[e] { ht + by } else { ht };
+            let up_n = (n * -h + UP * run).norm();
+            self.quad(s, p(-ht, 0.0, y0), p(ht, 0.0, y0), p(ext(1, run), run, y1), p(-ext(0, run), run, y1), up_n);
+            // The deck, and the wall at its outer edge.
+            let deck_ext = |e: usize| if nb[e] && corners { ht + far } else { ext(e, run) };
+            self.quad(s, p(-deck_ext(0), run, y1), p(deck_ext(1), run, y1), p(deck_ext(1), far, y1), p(-deck_ext(0), far, y1), UP);
+            self.quad(s, p(-ext(0, far), far, y0), p(ext(1, far), far, y0), p(ext(1, far), far, y1), p(-ext(0, far), far, y1), n);
+            // A square end where the neighbour has none.
+            for e in 0..2 {
+                if !nb[e] {
+                    let a = sgn[e] * ht;
+                    let out = t * sgn[e];
+                    self.tri(s, p(a, 0.0, y0), p(a, run, y1), p(a, run, y0), out);
+                    self.quad(s, p(a, run, y0), p(a, far, y0), p(a, far, y1), p(a, run, y1), out);
+                }
+            }
+        }
+        (x0 - if sides[3] { far } else { 0.0 }, z0 - if sides[2] { far } else { 0.0 }, x1 + if sides[1] { far } else { 0.0 }, z1 + if sides[0] { far } else { 0.0 })
+    }
+
     /// The profile of a transition: points (horizontal distance from the lip wall,
     /// height) from the flat bottom up to vertical, then `vert` metres of vertical.
     fn transition_profile(radius: f32, vert: f32, segs: usize) -> Vec<(f32, f32)> {

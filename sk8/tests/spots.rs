@@ -148,3 +148,81 @@ fn medborgarplatsen_bowls_from_geogen_drop_in_and_ride_across() {
     assert!(start.y - low > 1.0, "down only {:.2} m", start.y - low);
     assert!(start.z - north > 4.0, "only {:.1} m north", start.z - north);
 }
+
+/// Rides `spot` from `from`, heading `yaw` (0 = +z) at a cruising 6 m/s, up a bank whose deck
+/// is `deck_y` up, and turns on the deck to ride along it toward `along`.
+/// The deck holds it: it ends rolling on the deck at the deck's height, turned along it,
+/// having pushed on along it.
+/// @req SODER-LENS-S292
+fn up_the_bank_and_along_the_deck(name: &str, from: Vec3, yaw: f32, deck_y: f32, along: Vec3) {
+    let spot = sk8::spots::all().into_iter().find(|s| s.name == name).unwrap();
+    let mut s = Sim::new(World::from_spot(&spot), Difficulty::Normal);
+    s.t.apply_text(&std::fs::read_to_string("../world/skate/tuning.txt").unwrap());
+    let f = v3(yaw.sin(), 0.0, yaw.cos());
+    s.place(from, f);
+    s.p.grace = 0.0;
+    s.p.vel = f * 6.0;
+    s.p.speed_target = 6.0;
+    s.step(&[VirtualController::default()]);
+    // The board rides this far over the ground it stands on.
+    let ride = s.p.pos.y - from.y;
+    let deck_y = deck_y + ride;
+    let mut bails = Vec::new();
+    let mut crest = None;
+    let mut low_on_deck = f32::MAX;
+    for t in 0..60 * 8 {
+        if t % 20 == 0 && std::env::var("SK8_TRACE").is_ok() {
+            eprintln!("{t} pos {:?} speed {:.2} fwd {:?} {:?}", s.p.pos, s.p.speed(), s.p.fwd, s.p.state);
+        }
+        // Once up, steer along the deck until the board points along it, then push on.
+        let mut c = VirtualController::default();
+        if crest.is_some() {
+            let fwd = s.p.fwd.planar().norm();
+            if fwd.dot(along) < deg(8.0).cos() {
+                let right = v3(-fwd.z, 0.0, fwd.x);
+                c.lx = if right.dot(along) > 0.0 { 1.0 } else { -1.0 };
+            } else {
+                c = c.with(btn::A, t % 30 < 6);
+            }
+            low_on_deck = low_on_deck.min(s.p.pos.y);
+        }
+        s.step(&[c]);
+        for e in s.take_events() {
+            if let Event::Bail { reason } = e {
+                bails.push(reason);
+            }
+        }
+        if crest.is_none() && s.p.pos.y > deck_y - 0.05 {
+            crest = Some(s.p.pos);
+        }
+    }
+    let crest = crest.unwrap_or_else(|| panic!("{name}: never got up the bank, at {:?}", s.p.pos));
+    let end = s.p.pos;
+    let gone = (end - crest).dot(along);
+    assert!(bails.is_empty(), "{name}: bailed {bails:?}");
+    assert_eq!(s.p.state, sk8::sim::State::Ground, "{name}: at {end:?}");
+    assert!((end.y - deck_y).abs() < 0.05, "{name}: ended at y = {} off the {deck_y} m deck, at {end:?}", end.y);
+    assert!(low_on_deck > deck_y - 0.3, "{name}: dropped to {low_on_deck} after cresting");
+    assert!(s.p.fwd.planar().norm().dot(along) > deg(20.0).cos(), "{name}: not turned along the deck, fwd {:?}", s.p.fwd);
+    assert!(gone > 5.0, "{name}: only {gone:.1} m along the deck from {crest:?} to {end:?}");
+}
+
+/// Plattan's north bank: from between the granite benches up 1.2 m onto the street-level
+/// deck, a left turn and east along it.
+#[test]
+fn plattan_bank_up_to_the_north_deck_and_along_it() {
+    up_the_bank_and_along_the_deck("plattan", v3(6.0, 0.0, 12.0), 0.0, 1.2, v3(1.0, 0.0, 0.0));
+}
+
+/// Övningsplanen's west bank: across the plaza north of the bowl, up onto the 5 m deck, and
+/// north along it.
+#[test]
+fn ovningsplanen_bank_up_to_the_west_deck_and_along_it() {
+    up_the_bank_and_along_the_deck("ovningsplanen", v3(-32.0, 0.0, 20.0), -std::f32::consts::FRAC_PI_2, 1.2, v3(0.0, 0.0, 1.0));
+}
+
+/// Rålis's south bank: past the mini ramp's west side, up onto the 5 m deck, and west along it.
+#[test]
+fn ralis_bank_up_to_the_south_deck_and_along_it() {
+    up_the_bank_and_along_the_deck("ralis", v3(-4.0, 0.0, -9.0), std::f32::consts::PI, 1.2, v3(-1.0, 0.0, 0.0));
+}
