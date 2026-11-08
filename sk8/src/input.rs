@@ -60,6 +60,14 @@ pub fn dead_zone(x: f32, y: f32) -> (f32, f32) {
     (x * f, y * f)
 }
 
+/// The glass stick's forward deflection (y, -1 to 1) as a push, 0 to 1: nothing within a small
+/// dead zone, then in proportion to the full stick; pulled back is no push.
+/// @req SODER-LENS-S290
+pub fn stick_push(y: f32) -> f32 {
+    const DEAD: f32 = 0.1;
+    ((y - DEAD) / (1.0 - DEAD)).clamp(0.0, 1.0)
+}
+
 /// Stick angle (B.2.3): 0 = pulled down (toward the tail), +pi/2 right, +/-pi pushed up.
 pub fn stick_angle(x: f32, y: f32) -> f32 {
     x.atan2(-y)
@@ -492,6 +500,9 @@ pub struct Intents {
     pub slide: f32,
     pub push_new: bool,
     pub push_held: bool,
+    /// How hard a held push is, 0 to 1: the buttons push fully; the glass stick's push
+    /// (`stick_push`) as far as it is out (SODER-LENS-S290).
+    pub push_amount: f32,
     pub mongo: bool,
     pub crouch: f32,
     pub antic_mag: f32,
@@ -598,6 +609,7 @@ pub fn derive_intents(c: &VirtualController, buttons: &Buttons, pressed: u32, au
     let auto = auto_push && len > 0.8 && aa >= std::f32::consts::PI - 0.6;
     it.push_new = !both && (pa || px);
     it.push_held = !both && (c.down(btn::A) || c.down(btn::X) || auto);
+    it.push_amount = if it.push_held { 1.0 } else { 0.0 };
     it.mongo = c.down(btn::X) && !c.down(btn::A);
     let rlen = (rx * rx + ry * ry).sqrt();
     let ra = stick_angle(rx, ry).abs();

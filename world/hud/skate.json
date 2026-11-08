@@ -11,7 +11,9 @@
     {"id": "spot", "type": "text", "place": "top_left", "text": "{skate_style}  {skate_stance}  {skate_difficulty}",
      "when": {"attr": "skate_spot", "set": true}},
     {"id": "keys", "type": "text", "place": "top_left", "text": "W PUSH  S BRAKE  ARROWS DOWN-UP OLLIE  H MANUAL  S+A/D SLIDE  Z G GRAB  T BACK ON  F OFF",
-     "when": [{"attr": "riding", "set": true}, {"attr": "lens_glass", "eq": "desk"}]},
+     "when": [{"attr": "riding", "eq": "skateboard"}, {"attr": "lens_glass", "eq": "desk"}]},
+    {"id": "keys_scooter", "type": "text", "place": "top_left", "text": "W THROTTLE  S BRAKE  ARROWS DOWN-UP HOP, CURVED WHIPS AND BARSPINS  H MANUAL  Z G GRAB  F OFF",
+     "when": [{"attr": "riding", "eq": "scooter"}, {"attr": "lens_glass", "eq": "desk"}]},
     {"id": "thumbs", "type": "text", "place": "top_left", "text": "RIGHT THUMB DOWN-UP OLLIE  CURVE IT FOR FLIPS  OLLIE IN THE AIR GRABS",
      "when": [{"attr": "riding", "set": true}, {"attr": "lens_glass", "in": ["phone", "tablet"]}]},
 

@@ -104,7 +104,7 @@ int command(string verb, string args) {
         }
         // The rider's clip, from the lens that rides sk8: everyone else sees it.
         if (sscanf(args, "clip %s", what) == 1) {
-            if (query_attr(this_player(), "riding") == "skateboard" && (sscanf(what, "skate_%s", room) == 1 || what == "walk"))
+            if (skate_ride(this_player()) && (sscanf(what, "skate_%s", room) == 1 || what == "walk"))
                 play_clip(this_player(), what, 3.0);
             return 1;
         }
@@ -112,7 +112,7 @@ int command(string verb, string args) {
         // shown on the rider with a count in front, so the same flip twice is still news,
         // and every other lens turns this rider's board through it.
         if (sscanf(args, "board %s", what) == 1) {
-            if (query_attr(this_player(), "riding") == "skateboard") {
+            if (skate_ride(this_player())) {
                 add_attr(this_player(), "skate_board_n", 1);
                 set_attr(this_player(), "skate_board", query_attr(this_player(), "skate_board_n") + " " + what);
             }
@@ -223,21 +223,22 @@ int command(string verb, string args) {
     }
     // Onto a free board at this spot, wherever it stands (the clients say this on arriving).
     if (verb == "board") {
-        if (query_attr(this_player(), "riding") == "skateboard") return 1;
+        if (skate_ride(this_player())) return 1;
         write(board_here() ? "You step onto a board." : "Every board here is taken.");
         return 1;
     }
     // A spot's name on its own is the way there: mull's exits are compass directions only,
     // so this is a ride, not a door (GF-REQ-MULL-5). A skater steps off this spot's board,
-    // goes, and steps onto one of the next spot's: the boards belong to their spots.
+    // goes, and steps onto one of the next spot's: the boards belong to their spots. On the
+    // scooter, onto the next spot's scooter (SODER-LENS-S291).
     if ((!args || args == "") && member(skate_spots(), verb) >= 0) {
         start = skate_start(verb);
         set_attr(this_player(), "skate_pick", 0);
         if (query_attr(this_player(), "skate_session") == 1 || query_attr(this_player(), "skate_session") == 2) set_attr(this_player(), "skate_session", 0);
-        kept = query_attr(this_player(), "riding") == "skateboard";
-        if (kept) do_command("exit");
+        what = skate_ride(this_player());
+        if (what) do_command("exit");
         transport(this_player(), verb, start[0], start[1]);
-        if (kept) board_here();
+        if (what) ride_here(what);
         return 1;
     }
     // A skater's words for getting on and off.

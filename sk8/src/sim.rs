@@ -62,6 +62,16 @@ impl Landing {
     }
 }
 
+/// What is ridden. A board is pushed with a foot; a scooter (Söder's electric Voi) has a motor
+/// the stick opens, and its tricks have a scooter rider's names (SODER-LENS-S291).
+/// @req SODER-LENS-S291
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Vehicle {
+    #[default]
+    Board,
+    Scooter,
+}
+
 /// Something the host should hear about: sounds, haptics, HUD, and the lines it sends the
 /// world (`skate ...` commands, beargarden/world/players/player.c).
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -80,6 +90,53 @@ pub enum Event {
     Banked { names: Vec<String>, points: f32, multiplier: f32 },
     LineEnded { points: f32 },
     Marker,
+}
+
+/// A board trick's name as a scooter rider says it (SODER-LENS-S291): an ollie is a bunny hop,
+/// a kickflip a tailwhip (the deck round the bars), a shuvit a barspin, the 360s a double whip
+/// or a 360 barspin, the varials whip-barspin combos; grinds, manuals, spins and grabs keep
+/// theirs but the boardslide, which is a deckslide. Each name keeps what is around it
+/// ("Switch FS 180 Kickflip Indy" is "Switch FS 180 Tailwhip Indy").
+/// @req SODER-LENS-S291
+pub fn scooter_name(name: &str) -> String {
+    // Longest first, so "Varial Kickflip" is not read as "Kickflip".
+    const NAMES: [(&str, &str); 19] = [
+        ("FS 360 Pop Shuvit", "Reverse 360 Barspin"),
+        ("360 Pop Shuvit", "360 Barspin"),
+        ("FS Pop Shuvit", "Reverse Barspin"),
+        ("Pop Shuvit", "Barspin"),
+        ("Varial Kickflip", "Tailwhip Barspin"),
+        ("Varial Heelflip", "Reverse Whip Reverse Barspin"),
+        ("Inward Heelflip", "Reverse Whip Barspin"),
+        ("Hardflip", "Tailwhip Reverse Barspin"),
+        ("360 Flip", "Double Whip"),
+        ("Laser Flip", "Double Reverse Whip"),
+        ("Late Kickflip", "Late Tailwhip"),
+        ("Late Heelflip", "Late Reverse Tailwhip"),
+        ("Late FS Shuvit", "Late Reverse Barspin"),
+        ("Late Shuvit", "Late Barspin"),
+        ("Kickflip", "Tailwhip"),
+        ("Heelflip", "Reverse Tailwhip"),
+        ("Nollie", "Nose Hop"),
+        ("Ollie", "Bunny Hop"),
+        ("Boardslide", "Deckslide"),
+    ];
+    let words: Vec<&str> = name.split(' ').collect();
+    let mut out: Vec<String> = Vec::new();
+    let mut i = 0;
+    'word: while i < words.len() {
+        for (board, scooter) in NAMES {
+            let n = board.split(' ').count();
+            if i + n <= words.len() && words[i..i + n].join(" ") == board {
+                out.push(scooter.to_string());
+                i += n;
+                continue 'word;
+            }
+        }
+        out.push(words[i].to_string());
+        i += 1;
+    }
+    out.join(" ")
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -235,6 +292,12 @@ pub struct Player {
     pub(crate) push_applied: bool,
     pub(crate) push_steer: f32,
     pub pushing: bool,
+    /// The pause left before the next push: a light thumb on the stick pushes less often
+    /// (SODER-LENS-S290).
+    pub(crate) push_rest: f32,
+    /// How hard the push under way is, as it was when it began (a tap of the button is a full
+    /// push after the button is up).
+    pub(crate) push_amount: f32,
     pub(crate) brake_t: f32,
     pub(crate) kick: Option<(f32, Vec3, f32)>,
     pub(crate) slide: Option<(f32, f32, f32)>,
@@ -324,6 +387,8 @@ impl Player {
             push_applied: false,
             push_steer: 1.0,
             pushing: false,
+            push_rest: 0.0,
+            push_amount: 1.0,
             brake_t: 0.0,
             kick: None,
             slide: None,
@@ -427,6 +492,10 @@ pub struct Sim {
     pub completion: Option<Completion>,
     pub accumulator: f32,
     pub prev_frame: Option<crate::frame::Frame>,
+    pub vehicle: Vehicle,
+    /// The left stick's push on glass, 0 to 1 (`input::stick_push`): pushes (a board) or the
+    /// throttle (a scooter) as hard as the thumb is from the centre (SODER-LENS-S290).
+    pub stick_push: f32,
 }
 
 impl Sim {
@@ -452,7 +521,20 @@ impl Sim {
             completion: None,
             accumulator: 0.0,
             prev_frame: None,
+            vehicle: Vehicle::Board,
+            stick_push: 0.0,
         }
+    }
+
+    /// Ride a board or a scooter from now on. @req SODER-LENS-S291
+    pub fn set_vehicle(&mut self, v: Vehicle) {
+        self.vehicle = v;
+    }
+
+    /// The left stick's push on glass this frame, 0 (centred) to 1 (`input::stick_push`); it
+    /// stands until set again. The buttons still push fully. @req SODER-LENS-S290
+    pub fn set_stick_push(&mut self, amount: f32) {
+        self.stick_push = amount.clamp(0.0, 1.0);
     }
 
     pub fn set_difficulty(&mut self, d: Difficulty, overrides: &str) {
@@ -516,7 +598,13 @@ impl Sim {
         }
         let c = *samples.last().unwrap();
         self.last_input = c;
-        let it = input::derive_intents(&c, &self.buttons, pressed, self.t.auto_push > 0.5);
+        let mut it = input::derive_intents(&c, &self.buttons, pressed, self.t.auto_push > 0.5);
+        // The stick's push on glass holds a push as the buttons do, as hard as it is out
+        // (SODER-LENS-S290).
+        if self.stick_push > 0.0 {
+            it.push_held = true;
+            it.push_amount = it.push_amount.max(self.stick_push);
+        }
         self.intents = it;
         self.completion = completion;
         self.tick += 1;
@@ -588,8 +676,20 @@ impl Sim {
         self.camera();
     }
 
+    /// The events since last asked; on a scooter its tricks by a scooter rider's names
+    /// (`scooter_name`, SODER-LENS-S291).
     pub fn take_events(&mut self) -> Vec<Event> {
-        std::mem::take(&mut self.events)
+        let mut events = std::mem::take(&mut self.events);
+        if self.vehicle == Vehicle::Scooter {
+            for e in &mut events {
+                match e {
+                    Event::Trick { name } | Event::GrindStart { name } | Event::GrindEnd { name, .. } => *name = scooter_name(name),
+                    Event::Banked { names, .. } => names.iter_mut().for_each(|n| *n = scooter_name(n)),
+                    _ => {}
+                }
+            }
+        }
+        events
     }
 
     // ---- ground -------------------------------------------------------------------------
@@ -790,10 +890,32 @@ impl Sim {
         // Rolling backwards uphill past zero is handled by `travel` flipping at rest.
         p.vel += travel * dv;
 
-        // Pushing (B.6.2).
+        // Pushing (B.6.2). How hard: 1 for the buttons (A, X, the auto push), on glass the left
+        // stick's forward deflection (SODER-LENS-S290). Less than full, the pushes aim for that
+        // share of the pushable speed, each gives less, and the rider waits longer between them.
+        // @req SODER-LENS-S290
+        let amount = it.push_amount;
+        p.push_rest = (p.push_rest - DT).max(0.0);
         let can_push = p.wheels_down >= 2 && !manualing && !it.brake;
+        if self.vehicle == Vehicle::Scooter {
+            // A scooter's motor (SODER-LENS-S291): steady power up to its cruise as far as the
+            // stick is open, no push and no push clip. On the back wheel in a manual it still
+            // drives. @req SODER-LENS-S291
+            let target = t.scooter_cruise * amount;
+            let along = p.vel.dot(travel).max(0.0);
+            if it.push_held && p.wheels_down >= 1 && !it.brake && along < target {
+                let dir = if surf < 0.05 { if p.fakie { -tangent } else { tangent } } else { travel };
+                let dv = (t.scooter_accel * DT).min(target - along);
+                p.vel += dir * dv;
+                p.speed_target = p.vel.dot(dir).abs();
+            }
+            p.push_t = -1.0;
+            p.pushing = false;
+            p.push_queued = false;
+        }
+        let can_push = can_push && self.vehicle == Vehicle::Board;
         let ts = self.buttons.since_release(input::btn::A).min(self.buttons.since_release(input::btn::X));
-        if it.push_new {
+        if it.push_new && self.vehicle == Vehicle::Board {
             p.push_queued = true;
         }
         if p.push_t >= 0.0 {
@@ -806,7 +928,8 @@ impl Sim {
                 let along = p.vel.dot(travel).max(0.0);
                 let dv_limit = lerp(t.push_dv_rest, t.push_dv_max, sat(along / t.max_pushable_speed));
                 let hold = clamp(0.6 + p.push_hold / 0.3 * 0.4, 0.6, 1.0);
-                let dv = clamp(dv_limit * hold, 0.0, (t.max_pushable_speed - along).max(0.0));
+                let cap = t.max_pushable_speed * p.push_amount;
+                let dv = clamp(dv_limit * hold * lerp(0.5, 1.0, p.push_amount), 0.0, (cap - along).max(0.0));
                 let dir = if surf < 0.05 { if p.fakie { -tangent } else { tangent } } else { travel };
                 p.vel += dir * dv;
                 p.speed_target = p.vel.dot(dir).abs();
@@ -815,9 +938,14 @@ impl Sim {
             if p.push_t >= t.push_clip || (quick && p.push_t >= 0.45) {
                 p.push_t = -1.0;
                 p.pushing = false;
+                p.push_rest = (1.0 - p.push_amount) * t.push_rest;
             }
         }
-        if p.push_t < 0.0 && can_push && (p.push_queued || it.push_held) {
+        // A light thumb does not push again once the board rolls as fast as it asks.
+        let wanted = amount >= 1.0 || p.vel.dot(travel).max(0.0) < t.max_pushable_speed * amount * 0.95;
+        if p.push_t < 0.0 && can_push && (p.push_queued || (it.push_held && p.push_rest <= 0.0 && wanted)) {
+            // A queued press is a full push; a held one as hard as it is held.
+            p.push_amount = if p.push_queued { 1.0 } else { amount };
             p.push_t = 0.0;
             p.push_hold = 0.0;
             p.push_applied = false;
@@ -860,8 +988,8 @@ impl Sim {
         let steer_in = x * x * (3.0 - 2.0 * x);
         let steer_speed = clamp(1.0 - 0.06 * surf, 0.35, 1.0);
         let mut tilt = steer_in * steer_speed * (1.0 + 0.5 * it.hard_turn.abs()) * p.push_steer * sign(p.damped_turn);
-        // Speed wobble.
-        if surf > t.wobble_speed {
+        // Speed wobble; a scooter's bars hold it straight (SODER-LENS-S291).
+        if surf > t.wobble_speed && self.vehicle == Vehicle::Board {
             p.wobble_t += DT;
             let k = sat((surf - t.wobble_speed) / 6.0);
             let amp = t.wobble_amp * k * if p.crouch > 0.5 { 0.5 } else { 1.0 };
