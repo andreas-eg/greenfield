@@ -1,0 +1,3 @@
+# The lens is a private GitHub repository: fetch it with git (and its SSH keys), not cargo's own.
+[net]
+git-fetch-with-cli = true

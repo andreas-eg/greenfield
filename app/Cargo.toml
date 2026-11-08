@@ -1,0 +1,31 @@
+[package]
+name = "beargarden-app"
+version = "0.1.0"
+edition = "2021"
+description = "Beargarden sk8r: the lens with Beargarden's game modes registered (sk8), for the desk and the phone."
+publish = false
+
+[lib]
+name = "beargarden_app"
+# staticlib: the iOS shell links it and calls beargarden_main (in place of lens_main).
+crate-type = ["staticlib", "rlib"]
+path = "src/lib.rs"
+
+[[bin]]
+name = "beargarden"
+path = "src/main.rs"
+
+[dependencies]
+lens-app = { git = "ssh://git@github.com/eldergrounds/lens.git", branch = "feat/soder-lens-s260-game-modes" }
+lens-sk8 = { path = "../lens-sk8" }
+
+# As the lens builds itself: a debug build plays at the display's rate only with the
+# dependencies optimised (the lens's SODER-LENS-S173).
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.dev]
+opt-level = 1
+
+[profile.release]
+debug = 1
