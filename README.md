@@ -75,7 +75,9 @@ spot, `&demo=1` rides a scripted line). Click to lock the mouse, which is the ri
 pull back, then push forward fast to ollie. W/A/S/D steer and push; Space pushes. On a
 phone, the left half is the body and the right half is the board. A gamepad works too.
 
-In the lens on this Mac, in one go (the lens's branch `feat/beargarden-sk8` hosts sk8):
+In the lens on this Mac, in one go. `app/` is the lens with Beargarden's game modes: the lens is
+a git dependency and knows no game; `lens-sk8/` is sk8 behind the lens's game-mode contract
+(lens-mode), for a board whose drive says `"sim": "sk8"`:
 
     tools/make_skaters.sh          # once: the skaters' bodies
     tools/play.sh                  # starts the world, builds the lens if needed, plays
@@ -103,7 +105,9 @@ The ride is recorded: `sk8.jsonl` in the session's diagnostics (on a phone or si
 app's Documents/Diagnostics/<session>/), or where `LENS_SK8_LOG` points on a desk: every event,
 change of state and a sample twice a second with the ground under the rider.
 
-On the iPhone simulator (the lens's iOS app with this realm and its own world inside):
+On the iPhone simulator (the lens's iOS app with this realm and its own world inside). This still
+uses the lens's old `feat/beargarden-sk8` branch; the app's own iOS target, built from `app/`, is
+next (SODER-LENS-S260):
 
     cd ~/src/eg/lens.worktrees/lens-sk8/ios
     ENGINE=<engine checkout> SODER_WORLD=~/src/eg/beargarden/world ./build-driver.sh release   # once, and after a chart changes: ./build-driver.sh slices

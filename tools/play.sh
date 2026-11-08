@@ -1,16 +1,17 @@
 #!/bin/sh
 # play.sh: Beargarden sk8r on this Mac, in one go. Starts the world (mull with this realm) if
-# nothing listens on its port, builds the lens with sk8 if it is not built, makes the folder the
-# lens runs from, and runs it. Quitting the lens stops the world this script started.
+# nothing listens on its port, builds the app (app/: the lens with Beargarden's game modes) if it
+# is not built, makes the folder it runs from, and runs it. Quitting it stops the world this
+# script started.
 #
 #   tools/play.sh                 play
 #   LENS_HUD_LIVE=1 tools/play.sh edit world/hud/*.json and see it within a second
-#   REBUILD=1 tools/play.sh       build the lens again first
+#   REBUILD=1 tools/play.sh       build the app again first
 #
 # Where things are (defaults for this workspace; override any):
 #   ENGINE   a mull checkout          ~/src/eg/rig-wt/engine-main, else repos/small-forest/repos/engine
-#   LENS     the lens's sk8 branch    ~/src/eg/lens.worktrees/lens-sk8
-#   TARGET   its cargo target         ~/src/eg/rig-wt/cargo-target/lens-sk8
+#   LENS     a lens checkout, for its catalogue and fixtures   ~/src/eg/lens
+#   TARGET   the app's cargo target   ~/src/eg/rig-wt/cargo-target/beargarden
 #   PORT     the world's telnet port  4061 (its web port is PORT + 1)
 set -e
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
@@ -18,17 +19,18 @@ if [ -z "$ENGINE" ]; then
   ENGINE="$HOME/src/eg/rig-wt/engine-main"
   [ -f "$ENGINE/mix.exs" ] || ENGINE="$HOME/src/eg/repos/small-forest/repos/engine"
 fi
-LENS="${LENS:-$HOME/src/eg/lens.worktrees/lens-sk8}"
-TARGET="${TARGET:-$HOME/src/eg/rig-wt/cargo-target/lens-sk8}"
+LENS="${LENS:-$HOME/src/eg/lens}"
+TARGET="${TARGET:-$HOME/src/eg/rig-wt/cargo-target/beargarden}"
 PORT="${PORT:-4061}"
 WEB=$((PORT + 1))
 RUN="$HOME/.beargarden/lens-run"
 
-# The lens, with sk8 in it and this realm compiled in as its charts' home.
-BIN="$TARGET/release/lens-app"
+# The app: the lens (a git dependency) with sk8 registered, and this realm compiled in as its
+# charts' home.
+BIN="$TARGET/release/beargarden"
 if [ ! -x "$BIN" ] || [ -n "$REBUILD" ]; then
-  echo "building the lens with sk8 (a few minutes the first time)"
-  (cd "$LENS" && CARGO_TARGET_DIR="$TARGET" LENS_REALM="$HERE/world" cargo build --release -p lens-app --features lens-app/sk8)
+  echo "building the app (a few minutes the first time)"
+  (cd "$HERE/app" && CARGO_TARGET_DIR="$TARGET" LENS_REALM="$HERE/world" cargo build --release)
 fi
 
 # The skaters' bodies, made once from the band's and CharGen's (tools/make_skaters.sh).
