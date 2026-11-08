@@ -153,6 +153,14 @@ struct Skate {
     scooter: bool,
     /// The trick button pressed in the air and still held: a grab.
     grabbing: bool,
+    /// FOOT BRAKE on the glass, as the moves a pad has more buttons for (SODER-LENS-S369):
+    /// down last frame; pressed afresh in the air and held, the back-hand grab; a revert's
+    /// half circle being played for the left stick (the frame it is on, the side); and
+    /// brake with the stick hard over spent on a revert, until let go.
+    brake_was: bool,
+    back_grab: bool,
+    revert: Option<(u32, f32)>,
+    slide_spent: bool,
     /// The state last written to the record, and the time since its last sample.
     logged_state: String,
     sample_t: f32,
@@ -244,6 +252,10 @@ impl Skate {
             trick_was: false,
             scooter,
             grabbing: false,
+            brake_was: false,
+            back_grab: false,
+            revert: None,
+            slide_spent: false,
             logged_state: String::new(),
             sample_t: 0.0,
             clock: 0.0,
@@ -299,9 +311,11 @@ impl Skate {
     /// (the flick), Z and G the triggers (grabs), H and Y a manual and a nose manual, T on and
     /// off the board, E the X button, Q and R the shoulders, Shift crouch), the mouse dragged,
     /// and the glass: its stick and pedals (x steer; y forward the push, as hard as it is out,
-    /// SODER-LENS-S290; -1 FOOT BRAKE), OLLIE (the lens's TRICK), which flicks an ollie for the
+    /// SODER-LENS-S290; -1 FOOT BRAKE, with the stick hard over a powerslide or a revert, up a
+    /// transition a handplant, pressed in the air the back-hand grab, SODER-LENS-S369), OLLIE (the lens's TRICK), which flicks an ollie for the
     /// thumb, and the right thumb's drag.
     fn sample(&mut self, i: &Input, dt: f32) -> VirtualController {
+        const REVERT_FRAMES: u32 = 10;
         if i.mouse != [0.0, 0.0] {
             self.mouse += glam::Vec2::new(i.mouse[0], -i.mouse[1]) / 120.0;
             self.mouse = self.mouse.clamp_length_max(1.0);
@@ -388,6 +402,40 @@ impl Skate {
         self.trick_was = trick;
         let flick = self.ollie_t.map(|t| if t < 0.07 { -1.0 } else { 1.0 });
         self.ollie_t = self.ollie_t.map(|t| t + dt).filter(|t| *t < 0.13);
+        // The glass has a stick, OLLIE and FOOT BRAKE: the brake does what a pad's other
+        // buttons do, by what the board is doing (SODER-LENS-S369). @req SODER-LENS-S369
+        let brake = stick[1] < -0.5;
+        let p = &self.sim.p;
+        // Pressed afresh in the air and held: the back hand grabs (Indy, Stalefish), as
+        // OLLIE again is the front hand's.
+        if brake && !self.brake_was && airborne {
+            self.back_grab = true;
+        }
+        if !brake || !airborne {
+            self.back_grab = false;
+        }
+        self.brake_was = brake;
+        // Held riding up a transition (steeper than 20 degrees, where gravity brakes
+        // anyway): RB, a handplant at the coping if it reaches one.
+        let plant = brake && p.state == State::Ground && p.ground_n.y < 20f32.to_radians().cos() && p.vel.y > 0.0;
+        // With the stick hard over, rolling: the left stick back and that way, a powerslide.
+        // Held as the board lands, or pressed just after: the left stick's half circle round
+        // the back, a revert, played for the thumb over a sixth of a second; held on after
+        // it, the brake, until let go.
+        let over = brake && stick[0].abs() > 0.5;
+        if over && !self.slide_spent && p.state == State::Ground && p.ground_time < 0.15 {
+            self.revert = Some((0, stick[0].signum()));
+            self.slide_spent = true;
+        }
+        if !over {
+            self.slide_spent = false;
+        }
+        let arc = self.revert.map(|(n, side)| {
+            let a = std::f32::consts::PI * n as f32 / (REVERT_FRAMES - 1) as f32;
+            (-side * 0.95 * a.cos(), -0.95 * a.sin())
+        });
+        self.revert = self.revert.map(|(n, side)| (n + 1, side)).filter(|(n, _)| *n < REVERT_FRAMES);
+        let slide = over && matches!(p.state, State::Ground | State::Powerslide) && !self.slide_spent;
         let (ls, rs) = (i.pad.left, i.pad.right);
         let held = |b: &str| i.pad.held.iter().any(|h| h == b);
         let mut c = VirtualController {
@@ -396,9 +444,14 @@ impl Skate {
             rx: pick(pick(pick(self.right.x, self.mouse.x), rs[0]), thumb_stick.x),
             ry: flick.unwrap_or_else(|| pick(pick(pick(self.right.y, self.mouse.y), rs[1]), thumb_stick.y)),
             lt: if held("L2") || key("KeyZ") || grab { 1.0 } else { 0.0 },
-            rt: if held("R2") || key("KeyG") { 1.0 } else { 0.0 },
+            rt: if held("R2") || key("KeyG") || self.back_grab { 1.0 } else { 0.0 },
             buttons: 0,
         };
+        if let Some((x, y)) = arc {
+            (c.lx, c.ly) = (x, y);
+        } else if slide {
+            (c.lx, c.ly) = (stick[0].signum() * 0.7, -0.7);
+        }
         for (on, b) in [
             // W and S are the board's PUSH and FOOT BRAKE as the lens's hints say (the
             // world's controls); they are the left stick's forward and back as well. The glass
@@ -406,10 +459,12 @@ impl Skate {
             // step back on.
             (held("South") || key("Space") || key("KeyW") || (off && stick[1] > 0.5), btn::A),
             // S alone: with A or D it is the left stick back and to the side, the powerslide.
-            (held("East") || key("KeyC") || (lx == 0.0 && key("KeyS")) || stick[1] < -0.5, btn::B),
+            // FOOT BRAKE, unless it is a powerslide or a handplant; held through a revert's
+            // half circle, which a powerslide would cut short.
+            (held("East") || key("KeyC") || (lx == 0.0 && key("KeyS")) || (brake && !slide && !plant), btn::B),
             (held("West") || key("KeyE"), btn::X),
             (held("L1") || key("KeyQ"), btn::LB),
-            (held("R1") || key("KeyR"), btn::RB),
+            (held("R1") || key("KeyR") || plant, btn::RB),
             (held("L3") || key("ShiftLeft"), btn::L3),
             (held("R3"), btn::R3),
             // Y: off the board and on again (B.12); T on the keys.
@@ -867,6 +922,141 @@ mod tests {
         }
         let feet = mount.inverse().transform_point3(body.transform_point3(glam::Vec3::ZERO));
         assert!((feet - SCOOTER_FEET).length() < 1e-4, "feet at {feet}");
+    }
+
+    /// A ride on a spot of the test's own, at this speed along +z from the origin.
+    fn riding(b: sk8::build::Builder, speed: f32) -> Skate {
+        let mut k = Skate::start(&plattan()).unwrap();
+        k.sim = Sim::new(World::from_spot(&b.finish("t", "t", v3(0.0, 0.0, 0.0), 0.0)), sk8::Difficulty::Normal);
+        k.sim.place(v3(0.0, 0.0, 0.0), v3(0.0, 0.0, 1.0));
+        k.sim.p.grace = 0.0;
+        k.sim.p.vel = v3(0.0, 0.0, speed);
+        k.sim.p.speed_target = speed;
+        k
+    }
+
+    fn flat() -> sk8::build::Builder {
+        let mut b = sk8::build::Builder::new();
+        b.ground(sk8::world::Surface::Smooth, -20.0, -20.0, 20.0, 60.0, 0.0);
+        b
+    }
+
+    /// The glass: the stick (x steer, y the push or -1 FOOT BRAKE) and OLLIE.
+    fn glass(x: f32, y: f32, ollie: bool) -> Input {
+        Input { stick: Some([x, y]), trick: ollie, ..Input::default() }
+    }
+
+    /// OLLIE pressed and let go on the ground: the frames till the board is in the air.
+    fn ollie(k: &mut Skate) {
+        k.step(1.0 / 60.0, &glass(0.0, 0.0, true));
+        for _ in 0..30 {
+            k.step(1.0 / 60.0, &glass(0.0, 0.0, false));
+            if matches!(k.sim.p.state, State::Air | State::KnownAir) {
+                return;
+            }
+        }
+        panic!("no ollie: {:?}", k.sim.p.state);
+    }
+
+    // @req SODER-LENS-S369  FOOT BRAKE with the stick hard over is a powerslide; with it a little over, the brake.
+    #[test]
+    fn foot_brake_with_the_stick_hard_over_powerslides() {
+        for (x, slides) in [(1.0, true), (-0.8, true), (0.3, false), (0.0, false)] {
+            let mut k = riding(flat(), 8.0);
+            // Rolling a while, not just landed: that is a revert.
+            for _ in 0..20 {
+                k.step(1.0 / 60.0, &glass(0.0, 0.0, false));
+            }
+            let mut slid = false;
+            for _ in 0..60 {
+                k.step(1.0 / 60.0, &glass(x, -1.0, false));
+                slid |= k.sim.p.state == State::Powerslide;
+            }
+            assert_eq!(slid, slides, "stick x {x}");
+            assert!(k.sim.p.speed() < 6.0, "stick x {x}: slowed to {} m/s", k.sim.p.speed());
+        }
+    }
+
+    // @req SODER-LENS-S369  The same just after landing is a revert, and held on, not a powerslide too.
+    #[test]
+    fn foot_brake_and_the_stick_over_on_landing_reverts() {
+        for x in [1.0, -1.0] {
+            let mut k = riding(flat(), 6.0);
+            ollie(&mut k);
+            let mut n = 0;
+            while k.sim.p.state != State::Ground {
+                k.step(1.0 / 60.0, &glass(0.0, 0.0, false));
+                n += 1;
+                assert!(n < 120, "never landed");
+            }
+            let (mut reverted, mut slid) = (false, false);
+            for _ in 0..60 {
+                k.step(1.0 / 60.0, &glass(x, -1.0, false));
+                reverted |= k.sim.p.state == State::Revert;
+                slid |= k.sim.p.state == State::Powerslide;
+            }
+            assert!(reverted, "stick x {x}: no revert");
+            assert!(!slid, "stick x {x}: slid after the revert");
+        }
+        // Later on the ground it is the powerslide again.
+        let mut k = riding(flat(), 8.0);
+        for _ in 0..30 {
+            k.step(1.0 / 60.0, &glass(0.0, 0.0, false));
+        }
+        let mut reverted = false;
+        for _ in 0..30 {
+            k.step(1.0 / 60.0, &glass(1.0, -1.0, false));
+            reverted |= k.sim.p.state == State::Revert;
+        }
+        assert!(!reverted);
+    }
+
+    // @req SODER-LENS-S369  FOOT BRAKE held up the vert is a handplant at the coping.
+    #[test]
+    fn foot_brake_held_up_the_vert_handplants() {
+        let mut b = flat();
+        b.quarter_pipe(sk8::world::Surface::Smooth, 0.0, 6.0, 0.0, 8.0, 2.4, 0.3, 2.0, 0.0);
+        let mut k = riding(b, 7.5);
+        let mut planted = false;
+        let mut on_wall = false;
+        for _ in 0..300 {
+            // Pressed once the board is up the transition.
+            on_wall |= k.sim.p.ground_n.y < 0.95;
+            k.step(1.0 / 60.0, &glass(0.0, if on_wall { -1.0 } else { 0.0 }, false));
+            planted |= k.sim.p.state == State::Handplant;
+        }
+        assert!(planted, "no handplant");
+    }
+
+    // @req SODER-LENS-S369  FOOT BRAKE pressed in the air grabs with the back hand: Indy or Stalefish.
+    #[test]
+    fn foot_brake_in_the_air_is_the_back_hand_grab() {
+        for (thumb, names) in [(false, ["Indy", "Stalefish"]), (true, ["Mute", "Melon"])] {
+            let mut k = riding(flat(), 6.0);
+            ollie(&mut k);
+            // Up off the ground first, the ollie's flick done.
+            for _ in 0..6 {
+                k.step(1.0 / 60.0, &glass(0.0, 0.0, false));
+            }
+            let mut grab = None;
+            for _ in 0..40 {
+                // OLLIE again instead: the front hand.
+                let i = if thumb { glass(0.0, 0.0, true) } else { glass(0.0, -1.0, false) };
+                k.step(1.0 / 60.0, &i);
+                grab = grab.or(k.sim.p.grab.as_ref().map(|g| g.name.clone()));
+            }
+            let grab = grab.expect("no grab");
+            assert!(names.contains(&grab.as_str()), "{grab}, wanted one of {names:?}");
+        }
+        // Held from the ground into the air (a brake, a dark flip's B), no grab.
+        let mut k = riding(flat(), 6.0);
+        k.step(1.0 / 60.0, &glass(0.0, -1.0, true));
+        let mut grabbed = false;
+        for _ in 0..40 {
+            k.step(1.0 / 60.0, &glass(0.0, -1.0, false));
+            grabbed |= k.sim.p.grab.is_some();
+        }
+        assert!(!grabbed);
     }
 
     #[test]
