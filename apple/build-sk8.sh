@@ -11,10 +11,12 @@ case "${PLATFORM_NAME:-macosx}" in
 esac
 out="$here/build/lib/${PLATFORM_NAME:-macosx}"
 mkdir -p "$out"
-tdir=${CARGO_TARGET_DIR:-$here/../sk8/target}
+# sk8 is the lens's (crates/sk8, SODER-WORLD-S167): the lens checkout beside this one, or LENS.
+sk8=${LENS:-$here/../../lens}/crates/sk8
+tdir=${CARGO_TARGET_DIR:-$sk8/../../target}
 # Xcode's environment must not leak into cargo's own builds (a host build script would
 # otherwise link against the iOS SDK).
 env -u SDKROOT -u IPHONEOS_DEPLOYMENT_TARGET -u MACOSX_DEPLOYMENT_TARGET -u PLATFORM_NAME \
-  sh -c "cd '$here/../sk8' && cargo build --release --lib --target $target"
+  sh -c "cd '$sk8' && cargo build --release --lib --target $target"
 cp "$tdir/$target/release/libsk8.a" "$out/libsk8.a"
 echo "libsk8.a for $target"

@@ -10,18 +10,20 @@ castle, SODER-WORLD-S72). The field and the castle are still here.
 
 ## Layout
 
-- `sk8/`: the simulation, in Rust with no platform code. It covers input and the Flickit
-  recognizer (B.4), board physics, air and landing (B.5 to B.9), grinds (B.10), wipeout
-  and respawn (B.13), scoring (B.14), difficulty (B.15) and the camera (B.16). It has a C
-  ABI for Swift and the browser. `cargo test` rides the spec's acceptance checks (C.3)
-  headless. See `sk8/README.md`.
+- The simulation and the board are the lens's, shared with Söder so the two never drift
+  (SODER-WORLD-S167, 2026-11-10): `lens/crates/sk8` (input and the Flickit recognizer
+  (B.4), board physics, air and landing (B.5 to B.9), grinds (B.10), wipeout and respawn
+  (B.13), scoring (B.14), difficulty (B.15), the camera (B.16), a C ABI for Swift and the
+  browser) and `lens/crates/mode-sk8` (`lens-sk8`, the board behind the lens's game-mode
+  contract). Change them there; `app/` pins the lens rev. The scripts here find them in the
+  lens checkout beside this one (`../lens`), or `LENS=<lens checkout>`.
 - `world/`: the realm.
   - `spots/`: the skate spots. `plattan.c` (Sergels torg, the start room), `ralis.c`
     (Rålambshovsparken), `fryshuset.c` (the hall at Hammarby) and `ovningsplanen.c` (the
     practice plaza, on the field). Each has three boards, a session start and a scoreboard.
   - `charts/<spot>.json` and `<spot>.skate.json`: the chart the room names, and the
-    surfaces and rails sk8 rides. Both are written by `cargo run --bin spots -- ../world/charts`
-    from `sk8/src/spots.rs`.
+    surfaces and rails sk8 rides. Both are written by `cargo run --bin spots -- <beargarden>/world/charts`
+    in `lens/crates/sk8`, from its `src/spots.rs`.
   - `vehicles/skateboard.c`: the board. Its drive asks a lens for sk8
     (`"sim": "sk8"`) and falls back to Söder's kick board on today's lens.
   - `players/player.c`: the soul. It holds stance and difficulty, hears `skate ...` lines
@@ -76,8 +78,8 @@ pull back, then push forward fast to ollie. W/A/S/D steer and push; Space pushes
 phone, the left half is the body and the right half is the board. A gamepad works too.
 
 In the lens on this Mac, in one go. `app/` is the lens with Beargarden's game modes: the lens is
-a git dependency and knows no game; `lens-sk8/` is sk8 behind the lens's game-mode contract
-(lens-mode), for a board whose drive says `"sim": "sk8"`:
+a git dependency; its `lens-sk8` (lens `crates/mode-sk8`) is sk8 behind the lens's game-mode
+contract (lens-mode), for a board whose drive says `"sim": "sk8"`:
 
     tools/make_skaters.sh          # once: the skaters' bodies
     tools/play.sh                  # starts the world, builds the lens if needed, plays
@@ -131,7 +133,7 @@ The native apps (SwiftUI around sk8, apart from the lens):
 
 The simulation's tests:
 
-    cd sk8 && cargo test
+    cd ../lens && cargo test -p sk8 -p lens-sk8
 
 Written in LPC for mull; the efun reference is `/efuns` on a running world
 (`priv/efuns.md` in the engine). Tracked in Studio as the GREENFIELD project.
