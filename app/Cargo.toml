@@ -16,8 +16,9 @@ name = "beargarden"
 path = "src/main.rs"
 
 [dependencies]
-lens-app = { git = "ssh://git@github.com/eldergrounds/lens.git", rev = "c2ec20a19c068b7e2b2ac30549ccf13d2e94aecd" }
-lens-sk8 = { path = "../lens-sk8" }
+lens-app = { git = "ssh://git@github.com/eldergrounds/lens.git", rev = "eb74c4c9ef312e4a76d0ef9d64fed147e9aefacf" }
+# The board is the lens's, shared with Söder (SODER-WORLD-S167): lens crates/mode-sk8 over crates/sk8.
+lens-sk8 = { git = "ssh://git@github.com/eldergrounds/lens.git", rev = "eb74c4c9ef312e4a76d0ef9d64fed147e9aefacf" }
 
 # As the lens builds itself: a debug build plays at the display's rate only with the
 # dependencies optimised (the lens's SODER-LENS-S173).
