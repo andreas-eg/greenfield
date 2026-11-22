@@ -10,7 +10,7 @@
 #
 # Where things are (defaults for this workspace; override any):
 #   ENGINE   a mull checkout          ~/src/eg/rig-wt/engine-main, else repos/small-forest/repos/engine
-#   LENS     a lens checkout, for its catalogue and fixtures   ~/src/eg/lens
+#   LENS     a lens checkout, for its fixtures   ~/src/eg/lens
 #   TARGET   the app's cargo target   ~/src/eg/rig-wt/cargo-target/beargarden
 #   PORT     the world's telnet port  4061 (its web port is PORT + 1)
 set -e
@@ -42,7 +42,6 @@ for f in "$HOME/src/eg/lens/conditioned/"*; do
   [ -e "$f" ] && ln -sfn "$f" "$RUN/conditioned/$(basename "$f")"
 done
 ln -sfn "$HERE/conditioned/beargarden" "$RUN/conditioned/beargarden"
-ln -sfn "$LENS/catalogue.json" "$RUN/catalogue.json"
 ln -sfn "$LENS/fixtures" "$RUN/fixtures"
 
 # The world, unless one already listens.
